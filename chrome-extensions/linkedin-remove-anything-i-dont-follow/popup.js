@@ -1,4 +1,4 @@
-const DEFAULTS = { enabled: true, dim: false, hideAmplified: false };
+const DEFAULTS = { enabled: true, dim: false, hideAmplified: false, sortRecent: true };
 const KEYS = Object.keys(DEFAULTS);
 
 const els = Object.fromEntries(KEYS.map((k) => [k, document.getElementById(k)]));

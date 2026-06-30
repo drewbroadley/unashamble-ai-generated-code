@@ -30,10 +30,16 @@ On top of that, the following are always removed:
 - **Ads** — `Promoted by …`, `Sponsored`, or a `Promoted` label on a degree-less
   company post. (A real connection's post that merely *contains* the word
   "Promoted" is **not** hidden — that exact false positive was found and fixed.)
-- **`Suggested` posts** — the "Suggested" label at the top of the card.
+- **`Suggested` posts** — matched both at the start of the card and as a
+  standalone "Suggested" label element.
+- **`… follows this Page`** — a Page surfaced only because a connection follows
+  it (you don't follow it yourself).
 - **Recommendation modules** — `Jobs recommended for you`, `Recommended for
   you`, `People you may know`, `Add to your feed`, etc., even when LinkedIn wraps
   them inside a `"Feed post"` shell.
+
+It can also **auto-switch the feed sort from "Top" to "Recent"** — only when the
+feed is currently on "Top", so a manual choice is never overridden.
 
 This makes it resilient to LinkedIn shuffling their class names, because it reads
 rendered text, the degree badge, and real buttons rather than fragile selectors.

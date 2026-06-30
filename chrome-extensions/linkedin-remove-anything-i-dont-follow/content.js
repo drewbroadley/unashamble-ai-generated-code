@@ -31,6 +31,7 @@
     enabled: true,
     dim: false, // dim+collapse instead of fully removing
     hideAmplified: false, // also hide reposts/likes/comments surfaced via others, even 1st-degree
+    sortRecent: true, // switch the feed sort from "Top" to "Recent" automatically
   };
 
   let settings = { ...DEFAULTS };
@@ -92,7 +93,13 @@
     // contains the word "Promoted" somewhere in its text.
     if (isSponsored(node)) return { hide: true, reason: "promoted" };
 
-    if (/^\s*Suggested/.test(body)) return { hide: true, reason: "suggested" };
+    if (isSuggested(node, body)) return { hide: true, reason: "suggested" };
+
+    // "<Name> follows this Page" — a Page surfaced only because a connection
+    // follows it; you don't follow it yourself, so drop it.
+    if (/\bfollows this\b/i.test(body.slice(0, 70))) {
+      return { hide: true, reason: "follows-page" };
+    }
 
     // Optional stricter mode: drop reposts/reactions/comments even from people
     // you know, leaving only their own original posts.
@@ -131,6 +138,19 @@
       if (t === "Promoted" || t === "Sponsored" || /^Promoted by .+/.test(t)) {
         return true;
       }
+    }
+    return false;
+  }
+
+  /**
+   * Detect a "Suggested" post. LinkedIn puts the label either at the very start
+   * of the card or as a standalone "Suggested" element, so we check both.
+   */
+  function isSuggested(node, body) {
+    if (/^\s*Suggested\b/.test(body)) return true;
+    for (const el of node.querySelectorAll("span, div, a, p, h2, h3")) {
+      if (el.children.length) continue; // leaf nodes only
+      if ((el.textContent || "").trim() === "Suggested") return true;
     }
     return false;
   }
@@ -176,7 +196,44 @@
     }
   }
 
+  // ---- Auto-switch feed sort: Top -> Recent --------------------------------
+  // LinkedIn's feed defaults to "Top". We flip it to "Recent" *only* when it's
+  // currently on "Top" (never overriding a manual "Recent"/other choice), once
+  // per page view.
+  let sortAttempted = false;
+  function enforceRecentSort() {
+    if (!settings.sortRecent || sortAttempted) return;
+    const trigger = [...document.querySelectorAll('[role="button"][aria-expanded]')].find(
+      (e) => /Sort by:/.test((e.textContent || "").replace(/\s+/g, " "))
+    );
+    if (!trigger) return; // sort control not rendered yet; retry next sweep
+    const label = (trigger.textContent || "").replace(/\s+/g, " ").trim();
+    if (/Recent/.test(label)) {
+      sortAttempted = true; // already Recent — leave it
+      return;
+    }
+    if (!/Top/.test(label)) {
+      sortAttempted = true; // some other/unknown state — don't touch
+      return;
+    }
+    sortAttempted = true;
+    trigger.click(); // open the dropdown
+    let tries = 0;
+    const timer = setInterval(() => {
+      const recent = [...document.querySelectorAll('[role="menuitem"]')].find((e) =>
+        /^Recent$/.test((e.textContent || "").replace(/\s+/g, " ").trim())
+      );
+      if (recent) {
+        recent.click();
+        clearInterval(timer);
+      } else if (++tries > 20) {
+        clearInterval(timer); // give up; the user can switch manually
+      }
+    }, 50);
+  }
+
   function sweep() {
+    enforceRecentSort();
     if (!settings.enabled) return;
     const nodes = document.querySelectorAll("[data-lazy-mount-id]");
     for (const node of nodes) {
@@ -254,6 +311,8 @@
       }
     }
     if (touched) {
+      // If the user just turned Recent-sort on, allow it to re-apply.
+      if (changes.sortRecent && changes.sortRecent.newValue) sortAttempted = false;
       // Re-evaluate everything: clear cached decisions so toggles re-apply.
       document
         .querySelectorAll("[" + SEEN_ATTR + "]")
@@ -280,6 +339,7 @@
     if (location.pathname !== lastPath) {
       lastPath = location.pathname;
       pageHiddenCount = 0;
+      sortAttempted = false; // re-apply Recent sort on the new view's feed
     }
   }, 1000);
 
