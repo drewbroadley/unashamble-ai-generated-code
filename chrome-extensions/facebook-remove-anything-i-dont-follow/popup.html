@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header>
+      <div class="logo">f</div>
+      <div>
+        <h1>Feed Filter</h1>
+        <p class="sub">Only friends &amp; follows</p>
+      </div>
+    </header>
+
+    <label class="row toggle">
+      <span>
+        <strong>Filter feed</strong>
+        <small>Master switch for all the filters below</small>
+      </span>
+      <input type="checkbox" id="enabled" />
+      <span class="switch"></span>
+    </label>
+
+    <label class="row toggle">
+      <span>
+        <strong>Hide Sponsored / Ads</strong>
+        <small>Remove ads, even with Facebook's scrambled "Sponsored" label</small>
+      </span>
+      <input type="checkbox" id="hideSponsored" />
+      <span class="switch"></span>
+    </label>
+
+    <label class="row toggle">
+      <span>
+        <strong>Hide Suggested &amp; Reels</strong>
+        <small>"People you may know", "Suggested for you", "Reels", "Pages for you"</small>
+      </span>
+      <input type="checkbox" id="hideSuggested" />
+      <span class="switch"></span>
+    </label>
+
+    <label class="row toggle">
+      <span>
+        <strong>Hide accounts I don't follow</strong>
+        <small>Posts surfacing a "Follow", "Add friend" or "Join" button</small>
+      </span>
+      <input type="checkbox" id="hideNonFollowed" />
+      <span class="switch"></span>
+    </label>
+
+    <label class="row toggle">
+      <span>
+        <strong>Dim instead of remove</strong>
+        <small>Fade &amp; collapse hidden posts (hover to peek) instead of removing them</small>
+      </span>
+      <input type="checkbox" id="dim" />
+      <span class="switch"></span>
+    </label>
+
+    <div class="stat">
+      <span id="count">0</span>
+      <small>posts hidden on this page</small>
+    </div>
+
+    <footer>Open your <a href="https://www.facebook.com/" target="_blank">Facebook feed</a> to see it in action.</footer>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

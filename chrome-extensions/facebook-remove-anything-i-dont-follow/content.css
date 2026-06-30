@@ -1,0 +1,22 @@
+/*
+ * Hiding is gated on `html.fbf-active` so the popup can switch the whole
+ * filter on/off instantly without re-scanning the feed.
+ */
+html.fbf-active .fbf-hidden {
+  display: none !important;
+}
+
+/* "Dim" mode: fade + collapse with a hover peek instead of removing. */
+html.fbf-active.fbf-dim .fbf-hidden {
+  display: block !important;
+  opacity: 0.15;
+  filter: grayscale(1);
+  max-height: 80px;
+  overflow: hidden;
+  transition: opacity 0.15s ease;
+}
+html.fbf-active.fbf-dim .fbf-hidden:hover {
+  opacity: 1;
+  filter: none;
+  max-height: none;
+}
