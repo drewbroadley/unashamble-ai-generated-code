@@ -3,6 +3,7 @@ const DEFAULTS = {
   hideSponsored: true,
   hideSuggested: true,
   hideNonFollowed: true,
+  sortRecent: true,
   dim: false,
 };
 const KEYS = Object.keys(DEFAULTS);

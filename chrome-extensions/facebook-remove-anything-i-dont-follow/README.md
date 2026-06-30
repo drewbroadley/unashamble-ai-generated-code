@@ -44,6 +44,12 @@ fails. This extension works around three specific tricks:
 Everything else — friends, Pages/people you already follow, groups you're in,
 and your own posts — is kept.
 
+It also **forces the home feed to "Most recent" (chronological)** instead of the
+algorithmic "Top"/recommended feed, by redirecting `facebook.com/` to
+`facebook.com/?sk=h_chr`. This runs once per tab session (so it can never get
+stuck in a reload loop if Facebook strips the parameter) and can be turned off
+in the popup.
+
 ## Install (unpacked)
 
 1. Open `chrome://extensions`.

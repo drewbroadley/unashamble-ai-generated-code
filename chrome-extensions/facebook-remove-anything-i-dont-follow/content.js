@@ -34,6 +34,7 @@
     hideSponsored: true, // ads
     hideSuggested: true, // People you may know / Suggested for you / Reels modules
     hideNonFollowed: true, // posts from accounts you don't follow (Follow/Add friend/Join CTA)
+    sortRecent: true, // force the home feed to "Most recent" (chronological) instead of "Top"
     dim: false,
   };
 
@@ -212,6 +213,27 @@
     if (settings.enabled) sweep();
   }
 
+  // ---- Force "Most recent" (chronological) sort -----------------------------
+  // Facebook's home feed defaults to the algorithmic "Top" feed. The
+  // chronological feed lives at `?sk=h_chr`. We redirect the home feed there.
+  // Guarded to run at most once per tab session so that — if Facebook ever
+  // strips the parameter — we never get stuck in a reload loop.
+  function enforceMostRecent() {
+    if (!settings.sortRecent) return;
+    const path = location.pathname;
+    if (path !== "/" && path !== "/home.php") return; // home feed only
+    const params = new URLSearchParams(location.search);
+    if (params.get("sk") === "h_chr") return; // already chronological
+    try {
+      if (sessionStorage.getItem("fbf-recent-done")) return;
+      sessionStorage.setItem("fbf-recent-done", "1");
+    } catch (_) {
+      /* storage blocked — fall through and still try once */
+    }
+    params.set("sk", "h_chr");
+    location.replace(location.origin + "/?" + params.toString());
+  }
+
   // ---- Count reporting ------------------------------------------------------
   function pushCount() {
     try {
@@ -247,6 +269,7 @@
   // ---- Settings + messaging -------------------------------------------------
   chrome.storage?.sync?.get(DEFAULTS, (stored) => {
     settings = { ...DEFAULTS, ...stored };
+    enforceMostRecent(); // redirect to chronological feed before doing anything else
     setActiveState();
   });
 
@@ -260,6 +283,13 @@
       }
     }
     if (touched) {
+      // If the user just turned the sort on, let it redirect this view.
+      if (changes.sortRecent && changes.sortRecent.newValue) {
+        try {
+          sessionStorage.removeItem("fbf-recent-done");
+        } catch (_) {}
+        enforceMostRecent();
+      }
       document.querySelectorAll("[" + SEEN_ATTR + "]").forEach((n) => n.removeAttribute(SEEN_ATTR));
       pageHiddenCount = 0;
       document.querySelectorAll("." + HIDDEN_CLASS).forEach((n) => n.classList.remove(HIDDEN_CLASS));
