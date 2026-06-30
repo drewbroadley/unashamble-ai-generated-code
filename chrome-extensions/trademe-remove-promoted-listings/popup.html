@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header>
+      <div class="logo">tm</div>
+      <div>
+        <h1>Declutter</h1>
+        <p class="sub">Hide promoted &amp; sponsored</p>
+      </div>
+    </header>
+
+    <label class="row toggle">
+      <span>
+        <strong>Declutter listings</strong>
+        <small>Master switch for everything below</small>
+      </span>
+      <input type="checkbox" id="enabled" />
+      <span class="switch"></span>
+    </label>
+
+    <label class="row toggle">
+      <span>
+        <strong>Hide Sponsored / Promoted</strong>
+        <small>Remove sponsored &amp; promoted listings from search and browsing</small>
+      </span>
+      <input type="checkbox" id="hideSponsored" />
+      <span class="switch"></span>
+    </label>
+
+    <label class="row toggle">
+      <span>
+        <strong>Hide Advertisements</strong>
+        <small>Remove display ads and the top banner ad</small>
+      </span>
+      <input type="checkbox" id="hideAds" />
+      <span class="switch"></span>
+    </label>
+
+    <label class="row toggle">
+      <span>
+        <strong>Dim instead of remove</strong>
+        <small>Fade &amp; collapse hidden items (hover to peek) instead of removing them</small>
+      </span>
+      <input type="checkbox" id="dim" />
+      <span class="switch"></span>
+    </label>
+
+    <div class="stat">
+      <span id="count">0</span>
+      <small>items hidden on this page</small>
+    </div>
+
+    <footer>Open a <a href="https://www.trademe.co.nz/" target="_blank">Trade Me</a> search to see it in action.</footer>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

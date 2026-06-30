@@ -1,0 +1,19 @@
+/* Gated on html.tmf-active so the popup can toggle everything instantly. */
+html.tmf-active .tmf-hidden {
+  display: none !important;
+}
+
+/* "Dim" mode: fade + collapse with a hover peek instead of removing. */
+html.tmf-active.tmf-dim .tmf-hidden {
+  display: block !important;
+  opacity: 0.2;
+  filter: grayscale(1);
+  max-height: 70px;
+  overflow: hidden;
+  transition: opacity 0.15s ease;
+}
+html.tmf-active.tmf-dim .tmf-hidden:hover {
+  opacity: 1;
+  filter: none;
+  max-height: none;
+}

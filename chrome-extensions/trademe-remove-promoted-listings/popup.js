@@ -1,0 +1,34 @@
+const DEFAULTS = { enabled: true, hideSponsored: true, hideAds: true, dim: false };
+const KEYS = Object.keys(DEFAULTS);
+
+const els = Object.fromEntries(KEYS.map((k) => [k, document.getElementById(k)]));
+const countEl = document.getElementById("count");
+
+chrome.storage.sync.get(DEFAULTS, (s) => {
+  for (const k of KEYS) els[k].checked = !!s[k];
+});
+
+for (const k of KEYS) {
+  els[k].addEventListener("change", () => {
+    chrome.storage.sync.set({ [k]: els[k].checked });
+  });
+}
+
+function refreshCount() {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    const tab = tabs[0];
+    if (!tab || !/^https?:\/\/([a-z0-9-]+\.)?trademe\.co\.nz\//.test(tab.url || "")) {
+      countEl.textContent = "—";
+      return;
+    }
+    chrome.tabs.sendMessage(tab.id, { type: "tmf-get-count" }, (resp) => {
+      countEl.textContent = chrome.runtime.lastError || !resp ? "0" : resp.count;
+    });
+  });
+}
+
+chrome.runtime.onMessage.addListener((msg) => {
+  if (msg?.type === "tmf-count") countEl.textContent = msg.count;
+});
+
+refreshCount();

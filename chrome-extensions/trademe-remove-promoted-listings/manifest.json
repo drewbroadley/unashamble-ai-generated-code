@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Trade Me: Hide Promoted & Sponsored",
+  "description": "Removes Sponsored / Promoted listings and Advertisements from Trade Me search results and browsing, leaving only the organic listings.",
+  "version": "1.0.0",
+  "permissions": ["storage"],
+  "action": {
+    "default_title": "Trade Me Declutter",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.trademe.co.nz/*"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_start"
+    }
+  ]
+}
