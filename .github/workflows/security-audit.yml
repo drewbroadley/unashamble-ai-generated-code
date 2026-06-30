@@ -32,11 +32,9 @@ jobs:
         run: corepack enable && corepack prepare pnpm@latest --activate
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
-        with:
-          # No Python lockfile in this repo yet — skip caching to avoid the
-          # "cache will never get invalidated" warning.
-          enable-cache: false
+        # Installed directly rather than via astral-sh/setup-uv, whose action
+        # runtime still targets the deprecated Node 20. pipx ships on ubuntu-latest.
+        run: pipx install uv
 
       - name: Install JS dependencies (if any)
         run: |
