@@ -1,0 +1,15 @@
+# Aider → ai-does-good-shit.md
+#
+# Your standing operating manual is ai-does-good-shit.md at the repo root. Read it
+# and follow it on every task. It is the single source of truth for how to behave
+# here; this file just wires up the guardrails and loads the manual as context.
+
+# Never auto-confirm. Every command/edit needs explicit approval.
+yes-always: false
+auto-commits: false
+auto-test: false
+auto-lint: false
+
+# Load the standing manual as read-only context on every session.
+read:
+  - ai-does-good-shit.md

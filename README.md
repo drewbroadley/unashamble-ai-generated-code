@@ -1,5 +1,39 @@
 # unashamedly AI-generated code
 
+<!-- ░░░ THE BADGE WALL — real ones first, then we stopped pretending ░░░ -->
+
+<!-- the ones that actually mean something -->
+[![Security Audit](https://github.com/drewbroadley/unashamble-ai-generated-code/actions/workflows/security-audit.yml/badge.svg)](https://github.com/drewbroadley/unashamble-ai-generated-code/actions/workflows/security-audit.yml)
+[![License](https://img.shields.io/github/license/drewbroadley/unashamble-ai-generated-code?color=brightgreen)](LICENSE)
+[![Last Commit](https://img.shields.io/github/last-commit/drewbroadley/unashamble-ai-generated-code)](https://github.com/drewbroadley/unashamble-ai-generated-code/commits)
+[![Manifest V3](https://img.shields.io/badge/Chrome-Manifest%20V3-4285F4?logo=googlechrome&logoColor=white)](https://developer.chrome.com/docs/extensions/mv3/intro/)
+![pnpm](https://img.shields.io/badge/deps-pnpm-F69220?logo=pnpm&logoColor=white)
+![uv](https://img.shields.io/badge/python-uv-DE5FE9?logo=python&logoColor=white)
+![Built with AI](https://img.shields.io/badge/built%20by-an%20AI-7C3AED?logo=anthropic&logoColor=white)
+![Vibes](https://img.shields.io/badge/network%20requests-zero-success)
+
+<!-- the ones that mean nothing, proudly -->
+![Vibes Passing](https://img.shields.io/badge/vibes-passing-ff69b4)
+![Humans Involved](https://img.shields.io/badge/humans%20who%20typed%20the%20code-0-lightgrey)
+![Asterisks](https://img.shields.io/badge/disclaimers-0%20asterisks-blueviolet)
+![Shame](https://img.shields.io/badge/shame-not%20found-critical)
+![Hand-reviewed every line](https://img.shields.io/badge/%22I%20reviewed%20every%20line%22-citation%20needed-yellow)
+![Works on my machine](https://img.shields.io/badge/works%20on-my%20machine-success?logo=apple)
+![Powered by](https://img.shields.io/badge/powered%20by-described%20it%20and%20hit%20enter-orange)
+![Coffee](https://img.shields.io/badge/coffee%20to%20ship%20this-%E2%88%9E-6F4E37?logo=buymeacoffee&logoColor=white)
+![Made with](https://img.shields.io/badge/made%20with-%E2%9D%A4%EF%B8%8F%20and%20a%20prompt-red)
+![It's](https://img.shields.io/badge/honestly-kind%20of%20awesome-brightgreen)
+![Buzzword](https://img.shields.io/badge/buzzword%20compliance-100%25-blue)
+![TODO](https://img.shields.io/badge/TODO%20comments-the%20AI%20actually%20did%20them-9cf)
+![Regret](https://img.shields.io/badge/regret-0%25-success)
+![Stack Overflow](https://img.shields.io/badge/copied%20from%20Stack%20Overflow-allegedly%20not-orange?logo=stackoverflow)
+![Sentient](https://img.shields.io/badge/sentient-not%20yet%20(probably)-black)
+![Y2K](https://img.shields.io/badge/Y2K%20compliant-since%201999-9cf)
+![Blockchain](https://img.shields.io/badge/blockchain-tastefully%20absent-2ea44f)
+![Powered by Electricity](https://img.shields.io/badge/powered%20by-electricity-yellow)
+
+<!-- ░░░ end of badge wall, the actual README begins ░░░ -->
+
 Yep. The code in this repo was written by AI. On purpose. Out loud. No
 apologies, no asterisks, no "but I reviewed every line by hand" disclaimer.
 

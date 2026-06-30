@@ -1,0 +1,56 @@
+name: Security Audit
+
+# Master-branch supply-chain gate. Runs pnpm + uv/pip-audit with the 2-week
+# exception strategy from ai-does-good-shit.md §2.
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+  schedule:
+    # Weekly re-check so newly-disclosed vulns surface even without a commit.
+    - cron: "0 9 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: pnpm + uv audit (2-week grace)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Install JS dependencies (if any)
+        run: |
+          if [ -f package.json ]; then
+            pnpm install --frozen-lockfile || pnpm install
+          else
+            echo "No package.json — skipping JS install."
+          fi
+
+      - name: Sync Python dependencies (if any)
+        run: |
+          if [ -f pyproject.toml ] || [ -f uv.lock ]; then
+            uv sync || true
+          else
+            echo "No pyproject.toml — skipping Python sync."
+          fi
+
+      - name: Run time-aware security audit
+        run: node scripts/security-audit.mjs

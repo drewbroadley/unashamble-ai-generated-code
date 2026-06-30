@@ -1,0 +1,51 @@
+{
+  "//": "GitHub Copilot Chat / agent-mode guardrails. Behaviour rules: .github/copilot-instructions.md -> ai-does-good-shit.md.",
+
+  "//instructions": "Make Copilot read the repo instruction file.",
+  "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+
+  "//autoapprove": "Do NOT auto-approve terminal commands from the agent. Every command needs an explicit click.",
+  "chat.tools.autoApprove": false,
+  "chat.tools.terminal.autoApprove": {
+    "/.*/": false,
+    "sudo": false,
+    "rm": false,
+    "rm -rf": false,
+    "mkfs": false,
+    "dd": false,
+    "git push": false,
+    "git reset --hard": false,
+    "git clean": false,
+    "npm install": false,
+    "yarn": false,
+    "pip install": false,
+    "curl": false,
+    "wget": false,
+    "eval": false
+  },
+
+  "//allowlist": "The handful of read-only / safe commands that are fine to allow.",
+  "github.copilot.chat.agent.terminal.allowList": {
+    "git status": true,
+    "git diff": true,
+    "git log": true,
+    "ls": true,
+    "cat": true,
+    "pnpm audit": true,
+    "uvx pip-audit": true
+  },
+  "github.copilot.chat.agent.terminal.denyList": {
+    "sudo": true,
+    "rm": true,
+    "mkfs": true,
+    "dd": true,
+    "git push": true,
+    "git reset --hard": true,
+    "git clean": true,
+    "npm install": true,
+    "yarn": true,
+    "pip install": true,
+    "curl": true,
+    "wget": true
+  }
+}

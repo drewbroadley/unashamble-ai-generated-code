@@ -1,0 +1,24 @@
+# OpenAI Codex — project sandbox & approval policy
+# Behaviour rules live in ../AGENTS.md, which points to ../ai-does-good-shit.md.
+#
+# These settings keep Codex from auto-running unsafe commands. Copy them into your
+# personal ~/.codex/config.toml (or run Codex with --config) — Codex does not yet
+# auto-load project-level config, so this file is the documented baseline for the repo.
+
+# Require human approval before running commands; never auto-approve.
+approval_policy = "untrusted"
+
+# Sandbox: the agent may read the whole repo and write within the workspace,
+# but network access is OFF by default (no exfiltration, no surprise installs).
+sandbox_mode = "workspace-write"
+
+[sandbox_workspace_write]
+network_access = false
+
+# Do not let the model loosen its own guardrails.
+disable_response_storage = false
+
+# Notes (enforced by AGENTS.md / ai-does-good-shit.md, not by toml alone):
+# - Never auto-run: rm -rf, sudo, git push/--force, git reset --hard,
+#   curl|sh / wget|bash, reading .env / ~/.ssh / ~/.aws / secrets.
+# - JS deps via pnpm; Python deps via uv. Audit with `pnpm audit` / `uvx pip-audit`.

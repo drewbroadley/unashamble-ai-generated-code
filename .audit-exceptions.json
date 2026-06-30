@@ -1,0 +1,11 @@
+{
+  "//": "Deliberate, reviewed audit waivers. See ai-does-good-shit.md §2.",
+  "//how": "Beyond the automatic 14-day grace window, add a waiver here to allow a known vuln. Each MUST have an id (advisory/CVE/GHSA), a reason, who approved it, and an expires date. Expired waivers fail the build.",
+  "//example": {
+    "id": "GHSA-xxxx-xxxx-xxxx",
+    "reason": "No fix released upstream yet; not reachable from our code path.",
+    "approvedBy": "drew@gousable.com",
+    "expires": "2026-08-01"
+  },
+  "exceptions": []
+}
