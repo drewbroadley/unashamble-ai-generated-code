@@ -1,0 +1,26 @@
+/*
+ * Hiding is gated on `html.lirf-active` so the popup can switch the whole
+ * filter on/off instantly without re-scanning the feed.
+ */
+html.lirf-active .lirf-hidden {
+  display: none !important;
+}
+
+/*
+ * "Dim" mode: instead of removing posts, fade + collapse them with a hover
+ * peek. Toggled from the popup. Only one of hidden/dim styling applies.
+ */
+html.lirf-active.lirf-dim .lirf-hidden {
+  display: block !important;
+  opacity: 0.18;
+  filter: grayscale(1);
+  max-height: 90px;
+  overflow: hidden;
+  position: relative;
+  transition: opacity 0.15s ease;
+}
+html.lirf-active.lirf-dim .lirf-hidden:hover {
+  opacity: 1;
+  filter: none;
+  max-height: none;
+}

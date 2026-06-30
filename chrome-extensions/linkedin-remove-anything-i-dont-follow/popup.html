@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header>
+      <div class="logo">in</div>
+      <div>
+        <h1>Feed Filter</h1>
+        <p class="sub">Only 1st connections &amp; follows</p>
+      </div>
+    </header>
+
+    <label class="row toggle">
+      <span>
+        <strong>Filter feed</strong>
+        <small>Hide everything that isn't from a 1st connection or an account you follow</small>
+      </span>
+      <input type="checkbox" id="enabled" />
+      <span class="switch"></span>
+    </label>
+
+    <label class="row toggle">
+      <span>
+        <strong>Hide reposts &amp; reactions</strong>
+        <small>Also drop posts surfaced because someone reposted, liked or commented — even from connections</small>
+      </span>
+      <input type="checkbox" id="hideAmplified" />
+      <span class="switch"></span>
+    </label>
+
+    <label class="row toggle">
+      <span>
+        <strong>Dim instead of remove</strong>
+        <small>Fade &amp; collapse hidden posts (hover to peek) instead of removing them</small>
+      </span>
+      <input type="checkbox" id="dim" />
+      <span class="switch"></span>
+    </label>
+
+    <div class="stat">
+      <span id="count">0</span>
+      <small>posts hidden on this page</small>
+    </div>
+
+    <footer>Open your <a href="https://www.linkedin.com/feed/" target="_blank">LinkedIn feed</a> to see it in action.</footer>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
