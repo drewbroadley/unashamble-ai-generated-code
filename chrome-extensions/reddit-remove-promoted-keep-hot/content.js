@@ -58,18 +58,14 @@
 
   // ---- Keep the feed on Hot -------------------------------------------------
   // The default home feed ("/", "?feed=home", or "/best/") sorts by Best; the
-  // Hot sort is the stable path /hot/. Redirect once per tab session.
+  // Hot sort is the stable path /hot/. Redirect there every time you land on or
+  // navigate back to the default home feed. No loop risk: /hot/ is not a
+  // redirect target, so it never bounces.
   function enforceHotSort() {
     if (!settings.sortHot) return;
     const p = location.pathname;
     const isDefaultHome = p === "/" || p === "/best" || p === "/best/";
     if (!isDefaultHome) return; // leave /hot/, /new/, /top/, /r/*, comments, etc.
-    try {
-      if (sessionStorage.getItem("rrf-hot-done")) return;
-      sessionStorage.setItem("rrf-hot-done", "1");
-    } catch (_) {
-      /* storage blocked — still redirect once */
-    }
     location.replace(location.origin + "/hot/");
   }
 
@@ -122,12 +118,7 @@
       }
     }
     if (touched) {
-      if (changes.sortHot && changes.sortHot.newValue) {
-        try {
-          sessionStorage.removeItem("rrf-hot-done");
-        } catch (_) {}
-        enforceHotSort();
-      }
+      if (changes.sortHot && changes.sortHot.newValue) enforceHotSort();
       pageHiddenCount = 0;
       document
         .querySelectorAll("." + HIDDEN_CLASS)
@@ -143,14 +134,17 @@
     return true;
   });
 
-  // SPA navigation: reset the per-view count when the path changes.
+  // Reddit is a single-page app: clicking "Home" navigates client-side without
+  // reloading this script. Poll for path changes so we re-apply the Hot sort
+  // (and reset the per-view count) whenever you land back on the home feed.
   let lastPath = location.pathname;
   setInterval(() => {
     if (location.pathname !== lastPath) {
       lastPath = location.pathname;
       pageHiddenCount = 0;
+      enforceHotSort();
     }
-  }, 1000);
+  }, 400);
 
   startObserving();
 })();
