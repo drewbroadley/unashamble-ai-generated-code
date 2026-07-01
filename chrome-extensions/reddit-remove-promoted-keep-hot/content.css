@@ -1,0 +1,19 @@
+/* Gated on html.rrf-active so the popup can toggle everything instantly. */
+html.rrf-active .rrf-hidden {
+  display: none !important;
+}
+
+/* "Dim" mode: fade + collapse with a hover peek instead of removing. */
+html.rrf-active.rrf-dim .rrf-hidden {
+  display: block !important;
+  opacity: 0.2;
+  filter: grayscale(1);
+  max-height: 60px;
+  overflow: hidden;
+  transition: opacity 0.15s ease;
+}
+html.rrf-active.rrf-dim .rrf-hidden:hover {
+  opacity: 1;
+  filter: none;
+  max-height: none;
+}

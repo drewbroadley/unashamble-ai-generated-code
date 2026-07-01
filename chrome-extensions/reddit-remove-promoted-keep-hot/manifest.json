@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Reddit: Hide Promoted & Keep Hot",
+  "description": "Removes Promoted / Sponsored ads from the Reddit home feed and keeps the feed sorted by Hot instead of Best.",
+  "version": "1.0.0",
+  "permissions": ["storage"],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; base-uri 'none'"
+  },
+  "action": {
+    "default_title": "Reddit Declutter",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.reddit.com/*"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_start",
+      "all_frames": false
+    }
+  ]
+}

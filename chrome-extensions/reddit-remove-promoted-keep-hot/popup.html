@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header>
+      <div class="logo">r</div>
+      <div>
+        <h1>Declutter</h1>
+        <p class="sub">Hide promoted &amp; keep Hot</p>
+      </div>
+    </header>
+
+    <label class="row toggle">
+      <span>
+        <strong>Enable</strong>
+        <small>Master switch for everything below</small>
+      </span>
+      <input type="checkbox" id="enabled" />
+      <span class="switch"></span>
+    </label>
+
+    <label class="row toggle">
+      <span>
+        <strong>Hide Promoted / Sponsored</strong>
+        <small>Remove ad posts from the feed</small>
+      </span>
+      <input type="checkbox" id="hidePromoted" />
+      <span class="switch"></span>
+    </label>
+
+    <label class="row toggle">
+      <span>
+        <strong>Keep feed sorted by Hot</strong>
+        <small>Redirect the default home feed (Best) to the Hot sort</small>
+      </span>
+      <input type="checkbox" id="sortHot" />
+      <span class="switch"></span>
+    </label>
+
+    <label class="row toggle">
+      <span>
+        <strong>Dim instead of remove</strong>
+        <small>Fade &amp; collapse hidden posts (hover to peek) instead of removing them</small>
+      </span>
+      <input type="checkbox" id="dim" />
+      <span class="switch"></span>
+    </label>
+
+    <div class="stat">
+      <span id="count">0</span>
+      <small>promoted posts hidden on this page</small>
+    </div>
+
+    <footer>Open your <a href="https://www.reddit.com/hot/" target="_blank">Reddit feed</a> to see it in action.</footer>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
