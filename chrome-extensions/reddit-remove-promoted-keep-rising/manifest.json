@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Reddit: Hide Promoted & Keep Hot",
-  "description": "Removes Promoted / Sponsored ads from the Reddit home feed and keeps the feed sorted by Hot instead of Best.",
+  "name": "Reddit: Hide Promoted & Keep Rising",
+  "description": "Removes Promoted / Sponsored ads from the Reddit home feed and keeps the feed sorted by Rising instead of Best.",
   "version": "1.0.0",
   "permissions": ["storage"],
   "content_security_policy": {

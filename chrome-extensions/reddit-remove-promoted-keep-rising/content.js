@@ -1,5 +1,5 @@
 /*
- * Reddit: Hide Promoted & Keep Hot
+ * Reddit: Hide Promoted & Keep Rising
  * --------------------------------------------------------------------------
  * Two jobs on the Reddit ("shreddit") home feed:
  *
@@ -9,10 +9,9 @@
  *      posts are <article> wrappers around <shreddit-post>. So we simply hide
  *      each <shreddit-ad-post> (and its trailing <hr> so no double divider).
  *
- *   2. Keep the feed sorted by Hot. The home feed defaults to "Best"; the Hot
- *      sort lives at the stable URL /hot/. So when you land on the default home
- *      feed we redirect it to /hot/ (once per tab session, to avoid any loop and
- *      to respect a later manual sort choice).
+ *   2. Keep the feed sorted by Rising. The home feed defaults to "Best"; the
+ *      Rising sort lives at the stable URL /rising/. So whenever you land on or
+ *      navigate back to the default home feed we redirect it to /rising/.
  */
 (() => {
   "use strict";
@@ -22,7 +21,7 @@
   const DEFAULTS = {
     enabled: true,
     hidePromoted: true, // <shreddit-ad-post> ads
-    sortHot: true, // redirect the default home feed to /hot/
+    sortRising: true, // redirect the default home feed to /rising/
     dim: false,
   };
 
@@ -56,17 +55,17 @@
     if (settings.enabled) sweep();
   }
 
-  // ---- Keep the feed on Hot -------------------------------------------------
+  // ---- Keep the feed on Rising ----------------------------------------------
   // The default home feed ("/", "?feed=home", or "/best/") sorts by Best; the
-  // Hot sort is the stable path /hot/. Redirect there every time you land on or
-  // navigate back to the default home feed. No loop risk: /hot/ is not a
-  // redirect target, so it never bounces.
-  function enforceHotSort() {
-    if (!settings.sortHot) return;
+  // Rising sort is the stable path /rising/. Redirect there every time you land
+  // on or navigate back to the default home feed. No loop risk: /rising/ is not
+  // a redirect target, so it never bounces.
+  function enforceRisingSort() {
+    if (!settings.sortRising) return;
     const p = location.pathname;
     const isDefaultHome = p === "/" || p === "/best" || p === "/best/";
-    if (!isDefaultHome) return; // leave /hot/, /new/, /top/, /r/*, comments, etc.
-    location.replace(location.origin + "/hot/");
+    if (!isDefaultHome) return; // leave /rising/, /hot/, /new/, /top/, /r/*, etc.
+    location.replace(location.origin + "/rising/");
   }
 
   // ---- Count reporting ------------------------------------------------------
@@ -104,7 +103,7 @@
   // ---- Settings + messaging -------------------------------------------------
   chrome.storage?.sync?.get(DEFAULTS, (stored) => {
     settings = { ...DEFAULTS, ...stored };
-    enforceHotSort(); // redirect before rendering the wrong sort, if needed
+    enforceRisingSort(); // redirect before rendering the wrong sort, if needed
     setActiveState();
   });
 
@@ -118,7 +117,7 @@
       }
     }
     if (touched) {
-      if (changes.sortHot && changes.sortHot.newValue) enforceHotSort();
+      if (changes.sortRising && changes.sortRising.newValue) enforceRisingSort();
       pageHiddenCount = 0;
       document
         .querySelectorAll("." + HIDDEN_CLASS)
@@ -135,14 +134,14 @@
   });
 
   // Reddit is a single-page app: clicking "Home" navigates client-side without
-  // reloading this script. Poll for path changes so we re-apply the Hot sort
+  // reloading this script. Poll for path changes so we re-apply the Rising sort
   // (and reset the per-view count) whenever you land back on the home feed.
   let lastPath = location.pathname;
   setInterval(() => {
     if (location.pathname !== lastPath) {
       lastPath = location.pathname;
       pageHiddenCount = 0;
-      enforceHotSort();
+      enforceRisingSort();
     }
   }, 400);
 
