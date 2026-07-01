@@ -1,0 +1,10 @@
+{
+  "name": "chrome-extensions",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Browser extensions + OWASP security audit for them",
+  "type": "module",
+  "scripts": {
+    "test": "node tests/owasp-audit.mjs"
+  }
+}

@@ -36,6 +36,14 @@ filter as you paginate, change filters, or switch List/Gallery view.
 - **Dim instead of remove** — fade & collapse hidden items (hover to peek).
 - A live counter of how many items were hidden on the current page.
 
+## Security
+
+Follows the shared [security guidelines](../SECURITY.md) (OWASP Browser
+Extension Vulnerabilities Cheat Sheet): `storage`-only permission, HTTPS-only
+top-frame content script, strict CSP, no `innerHTML`/`eval`, no remote code, no
+network calls, and `sender.id`-validated messaging. Enforced by
+`npm test` (`../tests/owasp-audit.mjs`).
+
 ## Files
 
 | File | Purpose |

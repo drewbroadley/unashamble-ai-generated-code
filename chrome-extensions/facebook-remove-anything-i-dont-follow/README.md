@@ -81,6 +81,14 @@ in the popup.
   is read from the header buttons, so toggle "Hide accounts I don't follow" off
   if you find it too aggressive.
 
+## Security
+
+Follows the shared [security guidelines](../SECURITY.md) (OWASP Browser
+Extension Vulnerabilities Cheat Sheet): `storage`-only permission, HTTPS-only
+top-frame content script, strict CSP, no `innerHTML`/`eval`, no remote code, no
+network calls, and `sender.id`-validated messaging. Enforced by
+`npm test` (`../tests/owasp-audit.mjs`).
+
 ## Files
 
 | File | Purpose |

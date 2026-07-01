@@ -78,6 +78,14 @@ Settings sync via `chrome.storage.sync` and apply instantly.
 | `content.css` | The `display:none` (and optional dim) styling, gated on `html.lirf-active` |
 | `popup.html` / `popup.css` / `popup.js` | Toolbar settings UI + hidden counter |
 
+## Security
+
+Follows the shared [security guidelines](../SECURITY.md) (OWASP Browser
+Extension Vulnerabilities Cheat Sheet): `storage`-only permission, HTTPS-only
+top-frame content script, strict CSP, no `innerHTML`/`eval`, no remote code, no
+network calls, and `sender.id`-validated messaging. Enforced by
+`npm test` (`../tests/owasp-audit.mjs`).
+
 ## Tuning
 
 The whole policy lives in `classify()` in [`content.js`](content.js). If LinkedIn

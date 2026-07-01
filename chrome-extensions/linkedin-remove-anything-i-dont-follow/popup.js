@@ -35,7 +35,8 @@ function refreshCount() {
 }
 
 // Live updates while the popup is open.
-chrome.runtime.onMessage.addListener((msg) => {
+chrome.runtime.onMessage.addListener((msg, sender) => {
+  if (sender.id !== chrome.runtime.id) return; // only our own content script
   if (msg?.type === "lirf-count") countEl.textContent = msg.count;
 });
 

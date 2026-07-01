@@ -4,6 +4,9 @@
   "description": "Hides everything in your Facebook feed except posts from friends and Pages/people you follow — removing Sponsored ads, Suggested for you, People you may know, and Reels.",
   "version": "1.0.0",
   "permissions": ["storage"],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; base-uri 'none'"
+  },
   "action": {
     "default_title": "Facebook Feed Filter",
     "default_popup": "popup.html"
@@ -13,7 +16,8 @@
       "matches": ["https://www.facebook.com/*"],
       "js": ["content.js"],
       "css": ["content.css"],
-      "run_at": "document_start"
+      "run_at": "document_start",
+      "all_frames": false
     }
   ]
 }

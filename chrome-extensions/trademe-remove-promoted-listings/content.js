@@ -137,7 +137,9 @@
     }
   });
 
-  chrome.runtime?.onMessage?.addListener((msg, _sender, sendResponse) => {
+  chrome.runtime?.onMessage?.addListener((msg, sender, sendResponse) => {
+    // Only trust messages from our own extension pages (the popup).
+    if (sender.id !== chrome.runtime.id) return;
     if (msg?.type === "tmf-get-count") sendResponse({ count: pageHiddenCount });
     return true;
   });

@@ -34,7 +34,8 @@ function refreshCount() {
   });
 }
 
-chrome.runtime.onMessage.addListener((msg) => {
+chrome.runtime.onMessage.addListener((msg, sender) => {
+  if (sender.id !== chrome.runtime.id) return; // only our own content script
   if (msg?.type === "fbf-count") countEl.textContent = msg.count;
 });
 

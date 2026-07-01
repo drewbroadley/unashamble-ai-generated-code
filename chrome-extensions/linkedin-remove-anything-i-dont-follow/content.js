@@ -325,7 +325,11 @@
     }
   });
 
-  chrome.runtime?.onMessage?.addListener((msg, _sender, sendResponse) => {
+  chrome.runtime?.onMessage?.addListener((msg, sender, sendResponse) => {
+    // Only trust messages from our own extension pages (the popup), never from
+    // the web page. Web content can't reach chrome.runtime.onMessage without
+    // externally_connectable (which we don't set), but validate defensively.
+    if (sender.id !== chrome.runtime.id) return;
     if (msg?.type === "lirf-get-count") {
       sendResponse({ count: pageHiddenCount });
     }
