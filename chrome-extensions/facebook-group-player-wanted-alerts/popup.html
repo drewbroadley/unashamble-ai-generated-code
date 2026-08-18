@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header>
+      <div class="logo">⚽</div>
+      <div>
+        <h1>Player Wanted</h1>
+        <p class="sub">New fill-in posts, loudly</p>
+      </div>
+    </header>
+
+    <label class="row toggle">
+      <span>
+        <strong>Watch the group</strong>
+        <small>Master switch. Off means no scanning and no alerts.</small>
+      </span>
+      <input type="checkbox" id="enabled" />
+      <span class="switch"></span>
+    </label>
+
+    <label class="row toggle">
+      <span>
+        <strong>Play a chime</strong>
+        <small>Three rising beeps alongside the notification</small>
+      </span>
+      <input type="checkbox" id="sound" />
+      <span class="switch"></span>
+    </label>
+
+    <label class="row toggle">
+      <span>
+        <strong>Check with no tab open</strong>
+        <small>Opens the group in a background tab, reads it, closes it again</small>
+      </span>
+      <input type="checkbox" id="backgroundCheck" />
+      <span class="switch"></span>
+    </label>
+
+    <label class="row select">
+      <span>
+        <strong>Check every</strong>
+        <small>How often the feed is refreshed</small>
+      </span>
+      <select id="intervalMinutes">
+        <option value="1">1 min</option>
+        <option value="2">2 min</option>
+        <option value="3">3 min</option>
+        <option value="5">5 min</option>
+        <option value="10">10 min</option>
+        <option value="15">15 min</option>
+      </select>
+    </label>
+
+    <label class="row select">
+      <span>
+        <strong>Ignore posts older than</strong>
+        <small>Stops old posts alerting when they get scrolled into view</small>
+      </span>
+      <select id="maxAgeMinutes">
+        <option value="30">30 min</option>
+        <option value="60">1 hour</option>
+        <option value="90">1.5 hours</option>
+        <option value="180">3 hours</option>
+        <option value="360">6 hours</option>
+        <option value="0">Any age</option>
+      </select>
+    </label>
+
+    <label class="row select">
+      <span>
+        <strong>Group ID</strong>
+        <small>The number in the group's URL</small>
+      </span>
+      <input type="text" id="groupId" inputmode="numeric" spellcheck="false" />
+    </label>
+
+    <div class="stat">
+      <span id="lastCheck">—</span>
+      <small>last checked</small>
+    </div>
+
+    <h2 class="listhead">Recent alerts</h2>
+    <ul id="recent" class="recent">
+      <li class="empty">Nothing yet.</li>
+    </ul>
+
+    <div class="actions">
+      <button type="button" id="checkNow">Check now</button>
+      <button type="button" id="test">Test alert</button>
+    </div>
+
+    <footer>
+      Open the <a id="grouplink" href="https://www.facebook.com/" target="_blank" rel="noreferrer">group feed</a>
+      and leave the tab open for the fastest alerts.
+    </footer>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

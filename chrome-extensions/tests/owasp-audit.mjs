@@ -13,7 +13,23 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
+// Baseline every extension gets for free.
 const ALLOWED_PERMISSIONS = new Set(["storage"]);
+
+// Anything beyond the baseline must be listed here, by extension, with a
+// written justification. Widening a permission is therefore a deliberate,
+// reviewable code change rather than something that quietly slips into a
+// manifest. Keep these as small as the feature genuinely needs.
+const EXTRA_PERMISSIONS = {
+  "facebook-group-player-wanted-alerts": {
+    notifications: "The entire feature is a desktop notification for a new post.",
+    alarms:
+      "MV3 service workers are killed constantly; alarms are the only way to run a poll on a schedule.",
+    offscreen:
+      "Service workers have no DOM and cannot play audio. The offscreen document exists solely to sound the alert chime.",
+  },
+};
+
 const REQUIRED_CSP = ["script-src 'self'", "object-src 'self'"];
 const FORBIDDEN_CSP = ["unsafe-eval", "unsafe-inline", "http:"];
 
@@ -65,8 +81,16 @@ for (const dir of listExtensions()) {
 
   // 2. Least-privilege permissions
   const perms = manifest.permissions || [];
-  const extra = perms.filter((p) => !ALLOWED_PERMISSIONS.has(p));
+  const justified = EXTRA_PERMISSIONS[ext] || {};
+  const extra = perms.filter((p) => !ALLOWED_PERMISSIONS.has(p) && !justified[p]);
   check(ext, "permissions are least-privilege", extra.length === 0, extra.join(", "));
+  const unusedWaivers = Object.keys(justified).filter((p) => !perms.includes(p));
+  check(
+    ext,
+    "no stale permission justifications",
+    unusedWaivers.length === 0,
+    unusedWaivers.join(", ")
+  );
   check(
     ext,
     "no broad host_permissions",

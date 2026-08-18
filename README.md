@@ -67,6 +67,16 @@ really don't want you to:
   "Suggested" posts, strangers, and posts that only showed up because someone
   liked or reposted them — gets hidden.
 
+And one that watches a feed instead of pruning it:
+
+- **[Facebook Group: Player Wanted Alerts](chrome-extensions/facebook-group-player-wanted-alerts/)**
+  — watches a Facebook group's chronological feed for *new* "our team needs
+  fill-in players tonight" posts and fires a sticky desktop notification with
+  the kick-off time and how many players they're short. Only new posts, never a
+  backlog: a seen-set, a first-run baseline, and an age gate that understands
+  this group holds posts for admin approval. Refreshes itself in the background,
+  with or without a tab open.
+
 Each project has its own README with the full how-it-works writeup.
 
 ## Why say it this way
