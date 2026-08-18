@@ -70,33 +70,69 @@ chrome.alarms.onAlarm.addListener((alarm) => {
  * gone), optionally open a temporary background tab, let its content script
  * report, then close it again.
  */
-async function poll() {
+const TEMP_TAB_STALE_MS = 3 * 60000;
+
+async function poll(force) {
   const s = await getSettings();
-  if (!s.enabled) return;
+  if (!s.enabled) return { ok: false, why: "disabled" };
 
-  const state = await getLocal({ groupTabId: null, tempTabId: null });
+  const state = await getLocal({ groupTabId: null, tempTabId: null, tempTabAt: 0 });
 
-  if (state.groupTabId != null) {
-    const ok = await pokeTab(state.groupTabId);
-    if (ok) {
-      await setLocal({ lastCheck: Date.now() });
-      return;
+  // A temp tab that never got cleaned up (user closed it, Chrome dropped the
+  // alarm, service worker died mid-flight) used to latch background checks off
+  // permanently. Time-box it instead.
+  if (state.tempTabId != null) {
+    const stale = !state.tempTabAt || Date.now() - state.tempTabAt > TEMP_TAB_STALE_MS;
+    const alive = await tabExists(state.tempTabId);
+    if (stale || !alive) {
+      await closeTempTab();
+    } else if (!force) {
+      return { ok: false, why: "background check already in flight" };
+    }
+  }
+
+  if (!force && state.groupTabId != null) {
+    // Confirm the tab is still there AND still has our content script in it
+    // before trusting it as our eyes on the feed.
+    if (await tabExists(state.groupTabId)) {
+      const ok = await pokeTab(state.groupTabId);
+      if (ok) {
+        await setLocal({ lastCheck: Date.now(), lastSource: "open tab" });
+        return { ok: true, why: "poked open group tab" };
+      }
     }
     await setLocal({ groupTabId: null });
   }
 
-  if (!s.backgroundCheck) return;
-  if (state.tempTabId != null) return; // one already in flight
+  if (!s.backgroundCheck && !force) return { ok: false, why: "background check is off" };
 
   try {
     const tab = await chrome.tabs.create({ url: groupUrl(s.groupId), active: false });
-    await setLocal({ tempTabId: tab.id, lastCheck: Date.now() });
-    // Give Facebook time to render, then bin the tab. An alarm (not a timer)
-    // because the service worker can be suspended at any moment.
+    await setLocal({
+      tempTabId: tab.id,
+      tempTabAt: Date.now(),
+      tempTabReported: false,
+      lastCheck: Date.now(),
+      lastSource: "background tab",
+    });
+    // Hard backstop in case the tab never reports. The tab is normally closed
+    // as soon as it has reported at least once (see handleReport).
     chrome.alarms.create(CLOSE_ALARM, { delayInMinutes: 1 });
-  } catch (_) {
-    /* tab creation blocked — nothing we can do from here */
+    return { ok: true, why: "opened background tab" };
+  } catch (e) {
+    await setLocal({ lastError: `could not open background tab: ${e && e.message}` });
+    return { ok: false, why: "tab creation failed" };
   }
+}
+
+function tabExists(tabId) {
+  return new Promise((resolve) => {
+    try {
+      chrome.tabs.get(tabId, (tab) => resolve(!chrome.runtime.lastError && !!tab));
+    } catch (_) {
+      resolve(false);
+    }
+  });
 }
 
 function pokeTab(tabId) {
@@ -114,7 +150,7 @@ function pokeTab(tabId) {
 async function closeTempTab() {
   const { tempTabId } = await getLocal({ tempTabId: null });
   if (tempTabId == null) return;
-  await setLocal({ tempTabId: null });
+  await setLocal({ tempTabId: null, tempTabAt: 0, tempTabReported: false });
   try {
     await chrome.tabs.remove(tempTabId);
   } catch (_) {
@@ -132,7 +168,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     return true;
   }
   if (msg?.type === "pw-poll-now") {
-    poll().then(() => sendResponse({ ok: true }));
+    poll(msg.force === true).then((r) => sendResponse(r || { ok: true }));
     return true;
   }
   if (msg?.type === "pw-test-alert") {
@@ -170,9 +206,10 @@ async function handleReport(msg, sender) {
     tempTabId: null,
     groupTabId: null,
   });
+  const fromTempTab = tabId != null && tabId === state.tempTabId;
 
   // Remember a real (user-owned) group tab so we can poke it next time.
-  if (tabId != null && tabId !== state.tempTabId && state.groupTabId !== tabId) {
+  if (tabId != null && !fromTempTab && state.groupTabId !== tabId) {
     await setLocal({ groupTabId: tabId });
   }
 
@@ -218,6 +255,17 @@ async function handleReport(msg, sender) {
     initialised: true,
     recent,
     lastCheck: now,
+    lastSource: fromTempTab ? "background tab" : "open tab",
+    lastResult: {
+      at: now,
+      source: fromTempTab ? "background tab" : "open tab",
+      trigger: msg.trigger || "?",
+      hidden: !!msg.hidden,
+      feedSeen: !!msg.feedSeen,
+      scanned: (msg.posts || []).length,
+      fresh: fresh.length,
+      baseline: !state.initialised,
+    },
     unseen: (state.unseen || 0) + fresh.length,
   });
 
@@ -229,11 +277,27 @@ async function handleReport(msg, sender) {
     chrome.action.setBadgeText({ text: String(Math.min(total, 99)) });
   }
 
-  // If this report came from our throwaway tab, we're done with it.
-  if (tabId != null && tabId === state.tempTabId) closeTempTab();
+  // If this came from our throwaway tab, close it — but only once it has
+  // actually seen the feed. An early report from a page that hasn't rendered
+  // yet used to close the tab before the posts existed. The CLOSE_ALARM is the
+  // backstop if the feed never turns up at all.
+  if (fromTempTab && msg.feedSeen) closeTempTab();
 
   return { ok: true, new: fresh.length, scanned: (msg.posts || []).length };
 }
+
+// Keep our tab bookkeeping honest when tabs disappear underneath us.
+chrome.tabs.onRemoved.addListener(async (tabId) => {
+  const state = await getLocal({ groupTabId: null, tempTabId: null });
+  const patch = {};
+  if (state.groupTabId === tabId) patch.groupTabId = null;
+  if (state.tempTabId === tabId) {
+    patch.tempTabId = null;
+    patch.tempTabAt = 0;
+    patch.tempTabReported = false;
+  }
+  if (Object.keys(patch).length) await setLocal(patch);
+});
 
 // ---- Notifications --------------------------------------------------------
 

@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Facebook Group: Player Wanted Alerts",
   "description": "Watches a Facebook group's chronological feed for NEW 'team needs players' posts and fires a loud, sticky desktop notification telling you the kick-off time and how many players are wanted.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "permissions": ["storage", "notifications", "alarms", "offscreen"],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'; base-uri 'none'"

@@ -40,6 +40,13 @@ el("groupId").addEventListener("change", () => {
 
 el("checkNow").addEventListener("click", () => {
   chrome.runtime.sendMessage({ type: "pw-poll-now" }, () => void chrome.runtime.lastError);
+  setTimeout(refreshStatus, 1200);
+});
+// Bypasses the "use the open tab" path so you can test the background route
+// on demand instead of waiting for a tick.
+el("forceBg").addEventListener("click", () => {
+  chrome.runtime.sendMessage({ type: "pw-poll-now", force: true }, () => void chrome.runtime.lastError);
+  setTimeout(refreshStatus, 4000);
 });
 el("test").addEventListener("click", () => {
   chrome.runtime.sendMessage({ type: "pw-test-alert" }, () => void chrome.runtime.lastError);
@@ -89,9 +96,23 @@ function renderRecent(recent) {
   }
 }
 
-chrome.storage.local.get({ recent: [], lastCheck: 0 }, (st) => {
-  el("lastCheck").textContent = ago(st.lastCheck);
-  renderRecent(st.recent);
-});
+function describeResult(r) {
+  if (!r) return "last checked";
+  const bits = [`via ${r.source}`];
+  if (r.baseline) bits.push("baseline (no alerts)");
+  else bits.push(`${r.scanned} matching post${r.scanned === 1 ? "" : "s"}, ${r.fresh} new`);
+  if (!r.feedSeen) bits.push("⚠ feed not found");
+  return bits.join(" · ");
+}
+
+function refreshStatus() {
+  chrome.storage.local.get({ recent: [], lastCheck: 0, lastResult: null }, (st) => {
+    el("lastCheck").textContent = ago(st.lastCheck);
+    el("lastResult").textContent = describeResult(st.lastResult);
+    renderRecent(st.recent);
+  });
+}
+
+refreshStatus();
 
 chrome.runtime.sendMessage({ type: "pw-clear-badge" }, () => void chrome.runtime.lastError);

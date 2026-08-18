@@ -164,13 +164,18 @@
     return found;
   }
 
+  let reportCount = 0;
+
   function report(trigger) {
     const posts = scan();
+    reportCount++;
     try {
       chrome.runtime?.sendMessage?.({
         type: "pw-posts",
         trigger,
         groupId: currentGroupId(),
+        hidden: document.visibilityState === "hidden",
+        feedSeen: !!document.querySelector('[role="feed"]'),
         posts,
       });
     } catch (_) {
@@ -180,16 +185,62 @@
 
   // ---- Scheduling ---------------------------------------------------------
 
+  const DEBOUNCE_MS = 1500;
+  const MAX_WAIT_MS = 5000;
+
   let pending = null;
+  let firstScheduledAt = 0;
+
+  /**
+   * Debounce, but with a hard ceiling.
+   *
+   * Facebook mutates its DOM more or less continuously. A plain debounce can be
+   * starved forever by that drip — which is exactly what happened in background
+   * tabs: Chrome throttles the page's timers when a tab is hidden, spreading
+   * Facebook's work out into a steady trickle of mutations that reset a 1.5s
+   * timer indefinitely, so the scan never ran and nothing was ever reported.
+   * MAX_WAIT_MS guarantees a report goes out within 5s of the first change.
+   */
   function scheduleReport(trigger) {
+    const now = Date.now();
+    if (!firstScheduledAt) firstScheduledAt = now;
+
+    if (now - firstScheduledAt >= MAX_WAIT_MS) {
+      if (pending) clearTimeout(pending);
+      pending = null;
+      firstScheduledAt = 0;
+      report(trigger);
+      return;
+    }
+
     if (pending) clearTimeout(pending);
     pending = setTimeout(() => {
       pending = null;
+      firstScheduledAt = 0;
       report(trigger);
-    }, 1500);
+    }, DEBOUNCE_MS);
   }
 
   const observer = new MutationObserver(() => scheduleReport("mutation"));
+
+  /**
+   * Belt and braces: a background check gets one shot at this page before the
+   * service worker closes the tab, so don't rely solely on mutations firing.
+   * Scan on a timer too — often at first (while the feed is still rendering),
+   * then settling down. The service worker de-duplicates by post id, so extra
+   * reports cost nothing but a scan.
+   */
+  function startHeartbeat() {
+    let ticks = 0;
+    const tick = () => {
+      ticks++;
+      if (document.querySelector('[role="feed"]')) report("heartbeat");
+      // Every 3s for the first ~45s, then every 30s for as long as the tab lives.
+      const next = ticks < 15 ? 3000 : 30000;
+      setTimeout(tick, next);
+    };
+    setTimeout(tick, 2000);
+  }
 
   function start() {
     if (!document.body) {
@@ -197,6 +248,7 @@
       return;
     }
     observer.observe(document.body, { childList: true, subtree: true });
+    startHeartbeat();
     scheduleReport("load");
   }
 

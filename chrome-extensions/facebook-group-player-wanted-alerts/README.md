@@ -159,6 +159,15 @@ tab it creates is one it just opened itself.
 - **The service worker can be asleep.** Chrome may delay alarms when the machine
   is on battery saver or the browser is idle, so "every 3 minutes" is a target,
   not a guarantee.
+- **Background tabs are throttled** (fixed in 1.1.0, worth knowing about). Chrome
+  slows a hidden tab's timers, which spreads Facebook's own work into a steady
+  trickle of DOM mutations. The original 1.5s debounce could be reset by that
+  trickle indefinitely, so background checks scanned nothing and reported
+  nothing — silently. There is now a 5s hard ceiling on the debounce plus a
+  timer-driven heartbeat scan, and the background tab isn't closed until it has
+  actually seen the feed. If background checks ever look dead again, the popup's
+  status line ("via background tab · 3 matching posts, 0 new") is the place to
+  look, and **Force background check** runs that path on demand.
 - **It only works while Chrome is running.** No Chrome, no alerts.
 
 ## Tests
