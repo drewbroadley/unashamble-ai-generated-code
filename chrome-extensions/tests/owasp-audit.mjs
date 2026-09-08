@@ -30,6 +30,18 @@ const EXTRA_PERMISSIONS = {
   },
 };
 
+// Optional host permissions are requested at runtime, only when the user turns
+// the feature on, and can be revoked from chrome://extensions. They still get
+// the same treatment as any other widening: named, justified, and narrow.
+// Wildcard hosts are never acceptable here — see BROAD_HOST_RE.
+const OPTIONAL_HOSTS = {
+  "facebook-group-player-wanted-alerts": {
+    "https://ntfy.sh/*":
+      "Optional phone push. Off by default; granted only when the user enables it and revocable from chrome://extensions. The single origin the push is POSTed to.",
+  },
+};
+const BROAD_HOST_RE = /^(<all_urls>|\*:\/\/|https?:\/\/\*\/|https?:\/\/\*\.?(\*|$))/;
+
 const REQUIRED_CSP = ["script-src 'self'", "object-src 'self'"];
 const FORBIDDEN_CSP = ["unsafe-eval", "unsafe-inline", "http:"];
 
@@ -98,6 +110,26 @@ for (const dir of listExtensions()) {
     JSON.stringify(manifest.host_permissions || [])
   );
   check(ext, "no externally_connectable", !manifest.externally_connectable);
+
+  // Optional host permissions: justified, narrow, and no stale entries.
+  const optHosts = manifest.optional_host_permissions || [];
+  const optJustified = OPTIONAL_HOSTS[ext] || {};
+  const optExtra = optHosts.filter((h) => !optJustified[h]);
+  check(
+    ext,
+    "optional_host_permissions are justified",
+    optExtra.length === 0,
+    optExtra.join(", ")
+  );
+  const optBroad = optHosts.filter((h) => BROAD_HOST_RE.test(h));
+  check(ext, "optional_host_permissions are not wildcards", optBroad.length === 0, optBroad.join(", "));
+  const staleOpt = Object.keys(optJustified).filter((h) => !optHosts.includes(h));
+  check(
+    ext,
+    "no stale optional_host_permission justifications",
+    staleOpt.length === 0,
+    staleOpt.join(", ")
+  );
 
   // 3. Content scripts: HTTPS-only matches + explicit all_frames:false
   const scripts = manifest.content_scripts || [];

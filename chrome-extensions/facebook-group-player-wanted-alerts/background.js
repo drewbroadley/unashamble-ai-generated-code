@@ -3,13 +3,17 @@
  * --------------------------------------------------------------------------
  * Owns three jobs:
  *   1. Decide which reported posts are NEW (never alerted, and recent enough).
- *   2. Fire a sticky desktop notification + an audible chime for each one.
+ *   2. Fire a sticky desktop notification + an audible chime for each one, and
+ *      (if you turned it on) push the same alert to your phone via ntfy.
  *   3. Keep the feed fresh — poke an open group tab on a timer, and (optionally)
  *      open a throwaway background tab when no group tab is open at all.
  *
- * State lives in chrome.storage.local. Nothing is sent anywhere off-device.
+ * State lives in chrome.storage.local. The only outbound request this extension
+ * ever makes is the optional ntfy push, and only while it is switched on.
  */
 "use strict";
+
+importScripts("push.js");
 
 const DEFAULTS = {
   enabled: true,
@@ -18,6 +22,12 @@ const DEFAULTS = {
   maxAgeMinutes: 90,
   sound: true,
   backgroundCheck: true, // open a hidden tab when no group tab is open
+  // Phone push (ntfy). Off until you give it a topic — see push.js.
+  phonePush: false,
+  ntfyServer: "https://ntfy.sh",
+  ntfyTopic: "",
+  ntfyToken: "",
+  pushIncludeText: true,
 };
 
 const POLL_ALARM = "pw-poll";
@@ -185,6 +195,17 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     ).then(() => sendResponse({ ok: true }));
     return true;
   }
+  if (msg?.type === "pw-test-push") {
+    pushPost({
+      id: "test",
+      url: groupUrl(DEFAULTS.groupId),
+      author: "Test",
+      headline: "1:30pm today — 2 players needed",
+      subline: "1 female + 1 male · Div 3 · free",
+      text: "This is what a real alert looks like on your phone.",
+    }).then((r) => sendResponse(r));
+    return true;
+  }
   if (msg?.type === "pw-clear-badge") {
     chrome.action.setBadgeText({ text: "" });
     setLocal({ unseen: 0 }).then(() => sendResponse({ ok: true }));
@@ -269,7 +290,12 @@ async function handleReport(msg, sender) {
     unseen: (state.unseen || 0) + fresh.length,
   });
 
-  for (const post of fresh) await notifyPost(post, s.sound);
+  for (const post of fresh) {
+    await notifyPost(post, s.sound);
+    // Phone push is best-effort and deliberately AFTER the desktop notification:
+    // a dead network must never cost you the alert on the machine you're at.
+    await pushPost(post, s);
+  }
 
   if (fresh.length) {
     const total = (state.unseen || 0) + fresh.length;
@@ -345,6 +371,32 @@ function openFor(id) {
 }
 
 chrome.notifications.onClosed.addListener((id) => pending.delete(id));
+
+// ---- Phone push (ntfy) ----------------------------------------------------
+
+/**
+ * Send one alert to the phone. Silently does nothing unless phone push is on
+ * and configured. The outcome (including the error text) is recorded in
+ * chrome.storage.local so the popup can show you when delivery is broken —
+ * a push you think is working but isn't is worse than one you know is off.
+ */
+async function pushPost(post, settings) {
+  const s = settings || (await getSettings());
+  if (!s.phonePush) return { ok: false, error: "phone push is off" };
+
+  const result = await PlayerWantedPush.send({
+    server: s.ntfyServer,
+    topic: s.ntfyTopic,
+    token: s.ntfyToken,
+    includeText: s.pushIncludeText !== false,
+    post,
+  });
+
+  await setLocal({
+    lastPush: { at: Date.now(), ok: !!result.ok, error: result.ok ? "" : result.error || "failed" },
+  });
+  return result;
+}
 
 // ---- Sound (via an offscreen document — service workers have no audio) -----
 

@@ -5,6 +5,6 @@
   "description": "Browser extensions + OWASP security audit for them",
   "type": "module",
   "scripts": {
-    "test": "node tests/parser.test.mjs && node tests/owasp-audit.mjs"
+    "test": "node tests/parser.test.mjs && node tests/push.test.mjs && node tests/owasp-audit.mjs"
   }
 }

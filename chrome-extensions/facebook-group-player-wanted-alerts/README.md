@@ -3,7 +3,8 @@
 Watches one Facebook group's chronological feed and, the moment a **new** post
 appears from a team looking for fill-in players, fires a loud desktop
 notification that tells you **what time the game is** and **how many players
-they need**.
+they need** — and, if you turn it on, the same alert as a **push to your
+phone**.
 
 Built for [WIS - Indoor Football - Shed 1](https://www.facebook.com/groups/110710202292493/)
 (Wellington Indoor Sports), but the group ID is configurable in the popup.
@@ -32,6 +33,9 @@ Built for [WIS - Indoor Football - Shed 1](https://www.facebook.com/groups/11071
 4. **Alerts once, obviously.** A sticky Chrome notification (`requireInteraction`,
    priority 2 — it stays on screen until you deal with it), a three-beep chime,
    and a red badge on the toolbar icon. Clicking it opens the post.
+5. **Optionally pushes it to your phone** via [ntfy](https://ntfy.sh) — off by
+   default, and the only thing this extension ever sends anywhere. See
+   [Phone push](#phone-push-optional).
 
 ### Only new posts, never a backlog
 
@@ -65,6 +69,83 @@ takes whichever is **smaller**, so an approval-delayed post still counts as new.
 
 ---
 
+## Phone push (optional)
+
+Chrome only alerts the machine it's running on. If you want the alert on your
+phone too — you're away from the desk, the laptop is shut — turn on **Also alert
+my phone** in the popup.
+
+It uses [**ntfy**](https://ntfy.sh): a free pub/sub notification service with no
+account, no signup and no email address. Your desktop publishes a message to a
+*topic*; your phone is subscribed to that topic and rings.
+
+### Setup (about two minutes)
+
+1. Install the **ntfy** app — [iOS](https://apps.apple.com/app/ntfy/id1625396347)
+   or [Android](https://play.google.com/store/apps/details?id=io.heckel.ntfy)
+   (also on [F-Droid](https://f-droid.org/packages/io.heckel.ntfy/)).
+2. In the extension popup, open **Phone push** and click **Generate a topic**.
+   You'll get something like `pw-k7mq3xzt9rdw2npvfh4s`.
+3. In the ntfy app: **+** → paste that exact topic → subscribe.
+4. Back in the popup, turn on **Also alert my phone**. Chrome will ask for
+   permission to talk to `ntfy.sh` — that prompt is the extension requesting the
+   `https://ntfy.sh/*` host permission, and it is the only host it can ever ask
+   for.
+5. Click **Test phone push**. Your phone should ring within a second or two, and
+   the popup's status line will say `test push sent`. If it doesn't, the status
+   line shows the actual error.
+
+Tapping the phone notification opens the Facebook post.
+
+### The bit you need to understand before turning this on
+
+**The topic name is both the address and the password.** ntfy.sh has no
+accounts; anybody who knows or guesses your topic can:
+
+- **read every alert you receive** — including, by default, the text of the
+  posts, which contains team names and the poster's name; and
+- **send you fake alerts** that look identical to real ones.
+
+This is why the popup generates a 20-character random topic instead of letting
+you type `football`. Use the generated one. If you'd rather send less to the
+service, turn **Include the post text** off — then the push carries only the
+kick-off time, the player count, the division/cost line and the author's name.
+
+If that trade-off isn't acceptable, you have two better options, both supported:
+
+- **Self-host ntfy** and point the extension at it (**Self-hosted ntfy →
+  Server**). Must be HTTPS; plain HTTP is refused outright. Note that
+  `optional_host_permissions` can only name origins up front, and it names
+  exactly one — `https://ntfy.sh/*` — so a custom server is reached over plain
+  CORS instead. ntfy allows cross-origin publishing by default, so this works
+  out of the box; a server behind a proxy that strips CORS headers will not.
+  The deliberate trade here is a single narrow origin in the manifest rather
+  than a `https://*/*` wildcard that would let it reach anywhere.
+- **Use access-token auth** on a protected topic (self-hosted or an ntfy.sh
+  account) and paste the token into **Access token**.
+
+And if you leave phone push off, nothing changes: the extension makes zero
+network requests of its own, exactly as before.
+
+### Honest caveats about delivery
+
+- **Push is best-effort, the desktop notification is not.** The push is sent
+  *after* the desktop notification fires, so a dead network can never cost you
+  the alert on the machine you're sitting at.
+- **One retry, then it gives up.** A failure is recorded and shown in the popup
+  (`⚠ last push failed 2 min ago: …`). Check that line rather than assuming
+  silence means no games.
+- **It still needs Chrome running on the desktop.** The phone is a second
+  screen for an alert your desktop found; it is not an independent watcher. No
+  Chrome, no alerts anywhere.
+- **ntfy.sh is a free public service** run by a third party. It can be slow,
+  rate-limited (it caps free topics at a few hundred messages a day — far more
+  than this uses) or down. Self-host if that matters to you.
+- **The topic and token live in `chrome.storage.sync`**, so they sync to other
+  Chrome profiles signed into the same Google account.
+
+---
+
 ## Install
 
 1. `chrome://extensions` → enable **Developer mode**.
@@ -86,6 +167,7 @@ takes whichever is **smaller**, so an approval-delayed post still counts as new.
 | `permissions: ["alarms"]` | An MV3 service worker is killed within seconds of going idle. `chrome.alarms` is the only supported way to run a poll on a schedule. |
 | `permissions: ["offscreen"]` | Service workers have no DOM and therefore cannot play audio. A tiny offscreen document exists purely to sound the chime. |
 | `host_permissions` | **None.** Not requested, not needed. |
+| `optional_host_permissions: ["https://ntfy.sh/*"]` | Phone push. **Optional** — Chrome does not grant it at install time; it is requested the moment you switch phone push on, and you can revoke it any time from `chrome://extensions` → Details → Site access. One origin, no wildcards. Leave phone push off and this is never granted. |
 | `content_scripts.matches: ["https://www.facebook.com/groups/*"]` | HTTPS only, and only group pages. Your Facebook home feed, Messenger, Marketplace, profiles and every other site are never touched. |
 | `content_scripts.all_frames: false` | Top-level document only — no injection into embedded iframes. |
 | `run_at: "document_idle"` | Nothing to do until the feed has rendered. |
@@ -108,14 +190,40 @@ tab it creates is one it just opened itself.
     max age, sound, background-check.
   - `chrome.storage.local` — up to 500 post ids you've already been shown, the
     last 20 alert headlines, the id of your group tab, and the last check time.
-- **Sends: nothing, anywhere.** The extension makes **zero network requests of
-  its own**. No analytics, no telemetry, no server, no remote config, no remote
-  script. The only network traffic is Chrome loading facebook.com, exactly as it
-  would if you refreshed the tab yourself.
+  - `chrome.storage.sync` also holds your phone-push settings: on/off, ntfy
+    topic, server and (if you use one) access token.
+- **Sends: nothing at all, unless you turn on phone push.** With phone push off
+  — the default — the extension makes **zero network requests of its own**. No
+  analytics, no telemetry, no server, no remote config, no remote script. The
+  only network traffic is Chrome loading facebook.com, exactly as it would if
+  you refreshed the tab yourself.
+
+  With phone push **on**, and only then, one HTTPS POST per new alert goes to
+  `https://ntfy.sh/` (or your own server). That is the complete payload —
+  nothing else is added, and nothing is sent on any other occasion:
+
+  ```json
+  {
+    "topic":    "pw-k7mq3xzt9rdw2npvfh4s",
+    "title":    "⚽ 1:30pm today — 2 players needed",
+    "message":  "1 female + 1 male · Div 3 · free\nNEC FC need 2x players for today's game at 1.30PM - FREE\n— Daniel Harrold",
+    "priority": 5,
+    "tags":     ["soccer"],
+    "click":    "https://www.facebook.com/groups/…/posts/…/"
+  }
+  ```
+
+  The post text line is dropped if you turn **Include the post text** off. No
+  identifier for you, your browser or your machine is included or derivable —
+  ntfy sees your IP address, as any server you POST to does.
 
 ## What it does NOT do
 
 - Does not post, comment, react, DM, or click anything on your behalf.
+- Does not send anything anywhere with phone push off, and with it on sends only
+  the payload shown above, only to the ntfy server you chose.
+- Does not read anything back from ntfy — publishing is one-way. Nothing the
+  push server returns is parsed, executed, or acted on.
 - Does not read your Facebook home feed, messages, friends list, or any page
   outside `/groups/`.
 - Does not read cookies, tokens, or credentials.
@@ -168,7 +276,11 @@ tab it creates is one it just opened itself.
   actually seen the feed. If background checks ever look dead again, the popup's
   status line ("via background tab · 3 matching posts, 0 new") is the place to
   look, and **Force background check** runs that path on demand.
-- **It only works while Chrome is running.** No Chrome, no alerts.
+- **It only works while Chrome is running.** No Chrome, no alerts — on the
+  desktop *or* the phone.
+- **Phone push has its own caveats**, including the fact that an ntfy.sh topic
+  is a shared secret. They're spelled out under
+  [Phone push](#phone-push-optional); read that section before switching it on.
 
 ## Tests
 
@@ -176,5 +288,6 @@ From `chrome-extensions/`:
 
 ```
 node tests/parser.test.mjs    # 175 checks over 60+ real posts from the group
+node tests/push.test.mjs      # 54 checks on the ntfy payload builder + retries
 node tests/owasp-audit.mjs    # static security audit of every extension here
 ```

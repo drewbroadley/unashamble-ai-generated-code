@@ -7,10 +7,16 @@ const DEFAULTS = {
   maxAgeMinutes: 90,
   sound: true,
   backgroundCheck: true,
+  phonePush: false,
+  ntfyServer: "https://ntfy.sh",
+  ntfyTopic: "",
+  ntfyToken: "",
+  pushIncludeText: true,
 };
 
-const TOGGLES = ["enabled", "sound", "backgroundCheck"];
+const TOGGLES = ["enabled", "sound", "backgroundCheck", "phonePush", "pushIncludeText"];
 const SELECTS = ["intervalMinutes", "maxAgeMinutes"];
+const TEXTS = ["ntfyTopic", "ntfyServer", "ntfyToken"];
 
 const el = (id) => document.getElementById(id);
 
@@ -23,6 +29,7 @@ chrome.storage.sync.get(DEFAULTS, (s) => {
   for (const k of SELECTS) el(k).value = String(s[k]);
   el("groupId").value = s.groupId;
   el("grouplink").href = groupUrl(s.groupId);
+  for (const k of TEXTS) el(k).value = s[k] || "";
 });
 
 for (const k of TOGGLES) {
@@ -37,6 +44,88 @@ el("groupId").addEventListener("change", () => {
   el("grouplink").href = groupUrl(clean);
   chrome.storage.sync.set({ groupId: clean });
 });
+
+for (const k of TEXTS) {
+  el(k).addEventListener("change", () => {
+    chrome.storage.sync.set({ [k]: el(k).value.trim() }, refreshPushState);
+  });
+}
+
+// ---- Phone push -----------------------------------------------------------
+
+const NTFY_ORIGIN = "https://ntfy.sh/*";
+
+/**
+ * Ask for host access to the push server. Must be called straight off a click:
+ * awaiting anything first costs us the user gesture Chrome requires.
+ *
+ * Only ntfy.sh is declared in optional_host_permissions, so that is the only
+ * origin we can ask for. A self-hosted server falls back to the plain CORS
+ * path, which works because ntfy allows cross-origin publishing by default.
+ */
+function requestHostAccess() {
+  return new Promise((resolve) => {
+    try {
+      chrome.permissions.request({ origins: [NTFY_ORIGIN] }, (granted) =>
+        resolve(!chrome.runtime.lastError && granted)
+      );
+    } catch (_) {
+      resolve(false);
+    }
+  });
+}
+
+el("phonePush").addEventListener("click", () => {
+  if (el("phonePush").checked) requestHostAccess();
+});
+
+el("genTopic").addEventListener("click", () => {
+  const topic = PlayerWantedPush.randomTopic();
+  el("ntfyTopic").value = topic;
+  chrome.storage.sync.set({ ntfyTopic: topic }, refreshPushState);
+});
+
+el("testPush").addEventListener("click", () => {
+  requestHostAccess();
+  el("pushDetail").textContent = "sending…";
+  chrome.runtime.sendMessage({ type: "pw-test-push" }, (r) => {
+    if (chrome.runtime.lastError) return;
+    el("pushDetail").textContent = r && r.ok ? "test push sent" : `failed: ${(r && r.error) || "?"}`;
+  });
+});
+
+function renderPushState(s, lastPush) {
+  const topicOk = PlayerWantedPush.validTopic(s.ntfyTopic);
+  const serverOk = PlayerWantedPush.normaliseServer(s.ntfyServer) !== null;
+
+  if (!s.phonePush) {
+    el("pushState").textContent = "Phone push is off";
+    el("pushDetail").textContent = "nothing leaves this machine";
+    return;
+  }
+  if (!topicOk || !serverOk) {
+    el("pushState").textContent = "Phone push needs setup";
+    el("pushDetail").textContent = !serverOk
+      ? "server must be an https:// URL"
+      : "pick a topic, then subscribe to it in the ntfy app";
+    return;
+  }
+
+  el("pushState").textContent = `Pushing to ${s.ntfyTopic}`;
+  if (!lastPush || !lastPush.at) {
+    el("pushDetail").textContent = "no pushes sent yet — try Test phone push";
+  } else if (lastPush.ok) {
+    el("pushDetail").textContent = `last push delivered ${ago(lastPush.at)}`;
+  } else {
+    el("pushDetail").textContent = `⚠ last push failed ${ago(lastPush.at)}: ${lastPush.error}`;
+  }
+}
+
+function refreshPushState() {
+  chrome.storage.sync.get(DEFAULTS, (s) => {
+    chrome.storage.local.get({ lastPush: null }, (st) => renderPushState(s, st.lastPush));
+  });
+}
 
 el("checkNow").addEventListener("click", () => {
   chrome.runtime.sendMessage({ type: "pw-poll-now" }, () => void chrome.runtime.lastError);
@@ -111,6 +200,7 @@ function refreshStatus() {
     el("lastResult").textContent = describeResult(st.lastResult);
     renderRecent(st.recent);
   });
+  refreshPushState();
 }
 
 refreshStatus();

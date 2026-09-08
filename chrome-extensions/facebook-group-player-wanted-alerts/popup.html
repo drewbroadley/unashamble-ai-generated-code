@@ -79,6 +79,62 @@
       <input type="text" id="groupId" inputmode="numeric" spellcheck="false" />
     </label>
 
+    <h2 class="listhead">Phone push</h2>
+
+    <label class="row toggle">
+      <span>
+        <strong>Also alert my phone</strong>
+        <small>Sends the same alert via ntfy — the only thing that ever leaves this machine</small>
+      </span>
+      <input type="checkbox" id="phonePush" />
+      <span class="switch"></span>
+    </label>
+
+    <label class="row select">
+      <span>
+        <strong>ntfy topic</strong>
+        <small>Subscribe to this in the ntfy app. Treat it like a password.</small>
+      </span>
+      <input type="text" id="ntfyTopic" spellcheck="false" autocomplete="off" placeholder="pw-…" />
+    </label>
+
+    <div class="actions tight">
+      <button type="button" id="genTopic">Generate a topic</button>
+      <button type="button" id="testPush">Test phone push</button>
+    </div>
+
+    <label class="row toggle">
+      <span>
+        <strong>Include the post text</strong>
+        <small>Off sends only the time and player count to the push server</small>
+      </span>
+      <input type="checkbox" id="pushIncludeText" />
+      <span class="switch"></span>
+    </label>
+
+    <details class="advanced">
+      <summary>Self-hosted ntfy</summary>
+      <label class="row select">
+        <span>
+          <strong>Server</strong>
+          <small>HTTPS only</small>
+        </span>
+        <input type="text" id="ntfyServer" spellcheck="false" autocomplete="off" placeholder="https://ntfy.sh" />
+      </label>
+      <label class="row select">
+        <span>
+          <strong>Access token</strong>
+          <small>Only if your topic is protected. Leave blank for ntfy.sh.</small>
+        </span>
+        <input type="password" id="ntfyToken" spellcheck="false" autocomplete="off" />
+      </label>
+    </details>
+
+    <div class="stat push">
+      <span id="pushState">Phone push is off</span>
+      <small id="pushDetail">no pushes sent yet</small>
+    </div>
+
     <div class="stat">
       <span id="lastCheck">—</span>
       <small id="lastResult">last checked</small>
@@ -100,6 +156,7 @@
       and leave the tab open for the fastest alerts.
     </footer>
 
+    <script src="push.js"></script>
     <script src="popup.js"></script>
   </body>
 </html>
