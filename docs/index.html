@@ -6,44 +6,82 @@
 <title>unashamedly AI-generated</title>
 <meta name="description" content="Web things built by AI, on purpose, out loud. The name is the disclaimer.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Poppins:wght@600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Lexend+Deca:wght@300;400;500&display=swap">
 <style>
-  :root{--bg:#04060A;--ink:#E9E4D6;--ink-2:#9C978B;--ink-3:#5E5A52;--line:rgba(233,228,214,.16);
-    --mono:"IBM Plex Mono","Courier New",Courier,monospace;--title:"Poppins","Helvetica Neue",Arial,sans-serif;color-scheme:dark}
+  :root{--black:#000;--white:#fff;--grey:#353535;--blue:#00B3FF;--ink-2:#5c5c5c;--line:#e6e6e6;
+    --title:"Poppins","Helvetica Neue",Arial,sans-serif;--body:"Lexend Deca","Helvetica Neue",Arial,sans-serif;color-scheme:light}
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);font:500 14px/1.6 var(--mono);min-height:100vh;display:flex;flex-direction:column}
-  main{flex:1;width:min(92vw,720px);margin:0 auto;padding:clamp(40px,9vh,96px) 0 48px}
-  .eyebrow{font:600 13px/1.3 var(--title);letter-spacing:.18em;text-transform:uppercase}
-  h1{font:600 clamp(30px,5vw,48px)/1.05 var(--title);letter-spacing:.02em;margin:8px 0 18px;text-wrap:balance}
-  p{margin:0 0 14px;color:var(--ink-2);max-width:62ch}
-  p b{color:var(--ink);font-weight:600}
-  .list{margin-top:44px;border-top:1px solid var(--line)}
-  .item{display:block;color:inherit;text-decoration:none;padding:22px 0;border-bottom:1px solid var(--line)}
-  .item:hover .name,.item:focus-visible .name{text-decoration:underline;text-underline-offset:4px}
-  .item:focus-visible{outline:2px solid var(--ink);outline-offset:4px}
-  .name{font:600 20px/1.3 var(--title)}
-  .what{color:var(--ink-2);margin-top:4px;max-width:62ch}
-  .meta{margin-top:8px;font-size:12px;color:var(--ink-3);letter-spacing:.04em}
-  footer{width:min(92vw,720px);margin:0 auto;padding:0 0 32px;font-size:12px;color:var(--ink-3);line-height:1.7}
-  footer a{color:var(--ink-2)}
+  body{margin:0;background:var(--white);color:var(--black);font:400 17px/1.7 var(--body);-webkit-font-smoothing:antialiased}
+  .wrap{width:min(92vw,1040px);margin:0 auto}
+  header{padding:26px 0}
+  .brand{font:700 15px/1 var(--title);letter-spacing:.06em;text-transform:uppercase;text-decoration:none;color:var(--black)}
+  .brand span{color:var(--blue)}
+  .hero{background:var(--black);color:var(--white);padding:clamp(56px,10vh,120px) 0}
+  .hero h1{font:700 clamp(34px,6vw,64px)/1.1 var(--title);text-transform:uppercase;margin:0 0 22px;text-wrap:balance;max-width:16ch}
+  .hero h1 em{font-style:normal;color:var(--blue)}
+  .hero p{margin:0;font-size:clamp(17px,2vw,21px);line-height:1.75;max-width:52ch;color:#d8d8d8;font-weight:300}
+  .hero p b{color:var(--white);font-weight:500}
+  .band{background:var(--blue);color:var(--white);padding:22px 0;font:700 14px/1.3 var(--title);letter-spacing:.14em;text-transform:uppercase}
+  .projects{padding:clamp(40px,7vh,80px) 0}
+  .projects h2{font:700 clamp(24px,3.4vw,36px)/1.15 var(--title);text-transform:uppercase;margin:0 0 30px}
+  .projects h2::after{content:".";color:var(--blue)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:28px}
+  .item{display:flex;flex-direction:column;gap:12px;color:inherit;text-decoration:none;border:2px solid var(--black);padding:26px 26px 22px;min-height:100%;transition:background .15s,color .15s}
+  .item:hover,.item:focus-visible{background:var(--black);color:var(--white)}
+  .item:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+  .name{font:700 21px/1.2 var(--title);text-transform:uppercase}
+  .name::after{content:".";color:var(--blue)}
+  .what{color:var(--ink-2);font-size:15.5px;line-height:1.65;flex:1}
+  .item:hover .what,.item:focus-visible .what{color:#cfcfcf}
+  .meta{font:500 12px/1.5 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--blue)}
+  .go{font:700 13px/1 var(--title);letter-spacing:.1em;text-transform:uppercase;color:var(--blue)}
+  footer{background:var(--grey);color:var(--white);padding:36px 0;font-size:14px;line-height:1.8}
+  footer a{color:var(--blue);text-decoration:none}
+  footer a:hover{text-decoration:underline}
+  @media (max-width:520px){.item{padding:20px}}
+  @media (prefers-reduced-motion:reduce){.item{transition:none}}
 </style>
 </head>
 <body>
-<main>
-  <div class="eyebrow">unashamedly</div>
-  <h1>AI-generated, on purpose, out loud.</h1>
-  <p>I had ideas, I described them, and an AI built them. These are the ones that
-  live on the web. <b>The name is the disclaimer.</b></p>
-  <div class="list">
-    <a class="item" href="nz-lighthouses/">
-      <div class="name">Lighthouses of New Zealand</div>
-      <div class="what">An animated night chart of 86 coastal lights, each sweeping or flashing to its published characteristic on one shared clock. No land is drawn; the coast appears only where the beams stop.</div>
-      <div class="meta">single HTML file · canvas · ray-traced beams</div>
-    </a>
+<header class="wrap">
+  <a class="brand" href="./">unashamed<span>/</span>ai</a>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <h1>AI-generated, on purpose, <em>out loud.</em></h1>
+    <p>I had ideas, I described them, and an AI built them. These are the ones that
+    live on the web. <b>The name is the disclaimer.</b></p>
   </div>
-</main>
+</section>
+
+<div class="band"><div class="wrap">Web pages · single HTML files · no build step · every one documented</div></div>
+
+<section class="projects">
+  <div class="wrap">
+    <h2>Projects</h2>
+    <div class="grid">
+      <a class="item" href="nz-lighthouses/">
+        <div class="meta">Canvas · ray-traced beams</div>
+        <div class="name">Lighthouses of New Zealand</div>
+        <div class="what">An animated night chart of 86 coastal lights, each sweeping or flashing to its published characteristic on one shared clock. No land is drawn; the coast appears only where the beams stop.</div>
+        <div class="go">Open →</div>
+      </a>
+      <a class="item" href="te-awa-kairangi-roadworks/">
+        <div class="meta">SVG map · updated from each Friday's email</div>
+        <div class="name">Te Awa Kairangi Roadworks</div>
+        <div class="what">The weekly Melling / Te Wai Takamori o Te Awa Kairangi roadworks email for Lower Hutt, redrawn as a map: what is closed, one-way, under traffic management or being resurfaced overnight, week by week, with what changed since last week.</div>
+        <div class="go">Open →</div>
+      </a>
+    </div>
+  </div>
+</section>
+
 <footer>
-  Source and the full story: <a href="https://github.com/drewbroadley/unashamble-ai-generated-code">github.com/drewbroadley/unashamble-ai-generated-code</a>
+  <div class="wrap">
+    Source, READMEs and the full story: <a href="https://github.com/drewbroadley/unashamedai">github.com/drewbroadley/unashamedai</a><br>
+    A <a href="https://wearebroadleyspeaking.com/">BROADLEY/SPEAKING</a> side project. Built by AI, described by a human.
+  </div>
 </footer>
 </body>
 </html>

@@ -87,6 +87,12 @@ Static pages, published from [`docs/`](docs/) to
   characteristic on one shared clock. No land is drawn: beams are ray-traced
   against the real coastline, so the country appears only where light strikes
   it. One HTML file, no build step, one outbound request (Google Fonts).
+- **[Te Awa Kairangi Roadworks](docs/te-awa-kairangi-roadworks/)** — the
+  weekly SH2 Melling / Te Wai Takamori o Te Awa Kairangi roadworks email for
+  Lower Hutt, redrawn as an interactive map: every affected street coloured by
+  what is happening and when, a week selector, and a "changes this week" view
+  that diffs one email against the last. One HTML file, no build step, one
+  outbound request (Google Fonts).
 
 Each project has its own README with the full how-it-works writeup.
 
