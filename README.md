@@ -77,6 +77,17 @@ And one that watches a feed instead of pruning it:
   this group holds posts for admin approval. Refreshes itself in the background,
   with or without a tab open.
 
+### Web pages
+
+Static pages, published from [`docs/`](docs/) to
+[unashamedai.broadley.org.nz](https://unashamedai.broadley.org.nz):
+
+- **[Lighthouses of New Zealand](docs/nz-lighthouses/)** — an animated night
+  chart of 86 coastal lights, each sweeping or flashing to its published
+  characteristic on one shared clock. No land is drawn: beams are ray-traced
+  against the real coastline, so the country appears only where light strikes
+  it. One HTML file, no build step, one outbound request (Google Fonts).
+
 Each project has its own README with the full how-it-works writeup.
 
 ## Why say it this way

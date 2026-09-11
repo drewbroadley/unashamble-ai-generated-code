@@ -13,5 +13,7 @@ Claude-specific: your permission fence is enforced in
 
 Project layout: `chrome-extensions/` holds Manifest V3 extensions (vanilla JS, no
 build step); each has its own README — match its depth and honesty.
+`docs/` is the GitHub Pages site (unashamedai.broadley.org.nz): static, single-file
+pages, each in its own folder with a README to the same standard.
 
 When in doubt, defer to [ai-does-good-shit.md](ai-does-good-shit.md).
