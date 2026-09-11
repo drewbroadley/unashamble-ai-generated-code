@@ -262,7 +262,7 @@ function snapToShore(px,py){
 }
 
 /* ---------------- light setup ---------------- */
-L.forEach(o=>{
+L.forEach((o,i)=>{
   let [x,y]=proj(o.lon,o.lat);
   if(!o.hist&&inLand(x,y)) [x,y]=snapToShore(x,y);
   o.px=x;o.py=y;o.I=0;
@@ -272,6 +272,9 @@ L.forEach(o=>{
   o.sweep=!o.steady&&!!o.maj;                           // classic towers: rotating lens; small beacons: flashing glow
   o.R=o.sweep?(o.h>=100?48:40):(o.maj?70:52);        // beam reach / glow radius, chart units
   o.tab=horizon(x,y,o.R+10);
+  // each light starts at its own point in its cycle (fixed per light, so the scene is the same on every visit)
+  const r=Math.sin(i*12.9898+78.233)*43758.5453;
+  o.phase=(r-Math.floor(r))*o.sch.period;
 });
 
 /* ---------------- canvas ---------------- */
@@ -322,12 +325,13 @@ function draw(t,dt){
     const x=ox+o.px*s, y=oy+o.py*s;
     cx.setTransform(dpr,0,0,dpr,x*dpr,y*dpr);
     if(o.hist){cx.fillStyle="rgba(233,228,214,.28)";cx.beginPath();cx.arc(0,0,1.2,0,7);cx.fill();continue;}
-    const on=stateAt(o.sch,t);
+    const tl=t+o.phase;
+    const on=stateAt(o.sch,tl);
     if(on)o.I=1;else o.I*=Math.exp(-dt*(o.steady?3:2.2));
     const col=COL[on||o.sch.col];
     if(o.sweep){
       for(const p of o.sch.pulses){
-        const th=Math.PI/2+2*Math.PI*((t-p.s)/o.sch.period);
+        const th=Math.PI/2+2*Math.PI*((tl-p.s)/o.sch.period);
         beam(o,th,COL[p.col],0.3927,.22,.08,o.R,s);
         beam(o,th,COL[p.col],0.26,.34,.14,o.R,s);
         beam(o,th,COL[p.col],0.13,.60,.26,o.R,s);
@@ -368,7 +372,7 @@ function frame(now){
   if(!paused)T+=dt*speed;
   if((frames++&3)===0)clockEl.textContent=T.toFixed(1)+" s";
   draw(T,dt*speed);
-  const cur=document.getElementById("cur");if(cur&&hover)cur.style.left=((T%hover.sch.period)/hover.sch.period*100)+"%";
+  const cur=document.getElementById("cur");if(cur&&hover)cur.style.left=(((T+hover.phase)%hover.sch.period)/hover.sch.period*100)+"%";
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
