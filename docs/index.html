@@ -23,6 +23,8 @@
   .hero p b{color:var(--ink);font-weight:500}
   main{flex:1;padding-bottom:clamp(40px,8vh,80px)}
   h2{font:600 13px/1.3 var(--title);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin:0 0 16px}
+  h2 + p{margin:-8px 0 18px;color:var(--ink-2);font-size:15px;max-width:60ch}
+  .grid + h2{margin-top:44px}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
   .item{display:flex;flex-direction:column;gap:10px;color:inherit;text-decoration:none;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:24px 24px 20px;transition:border-color .15s,box-shadow .15s}
   .item:hover,.item:focus-visible{border-color:var(--blue);box-shadow:0 6px 20px rgba(31,42,48,.06)}
@@ -49,7 +51,7 @@
 </section>
 
 <main class="wrap">
-  <h2>Projects</h2>
+  <h2>Web pages</h2>
   <div class="grid">
     <a class="item" href="nz-lighthouses/">
       <div class="meta">Canvas · ray-traced beams</div>
@@ -61,6 +63,41 @@
       <div class="meta">SVG map · updated weekly</div>
       <div class="name">Te Awa Kairangi Roadworks</div>
       <div class="what">The weekly Melling / Te Wai Takamori o Te Awa Kairangi roadworks email for Lower Hutt, redrawn as a map: what is closed, one-way, under traffic management or being resurfaced overnight, week by week, with what changed since last week.</div>
+      <div class="go">Open →</div>
+    </a>
+  </div>
+
+  <h2>Chrome extensions</h2>
+  <p>Load-unpacked Manifest V3 extensions. Each one asks for the smallest permission set that works, makes no network requests of its own, and has a page that walks through every permission and why.</p>
+  <div class="grid">
+    <a class="item" href="facebook-remove-anything-i-dont-follow/">
+      <div class="meta">Facebook · storage only</div>
+      <div class="name">Facebook Feed: Only Friends &amp; Follows</div>
+      <div class="what">Strips the home feed down to friends, Pages and people you follow, and your groups. Hides Sponsored ads, Suggested for you, People you may know and Reels, reconstructing the real "Sponsored" label from element geometry because Facebook scrambles it.</div>
+      <div class="go">Open →</div>
+    </a>
+    <a class="item" href="linkedin-remove-anything-i-dont-follow/">
+      <div class="meta">LinkedIn · storage only</div>
+      <div class="name">LinkedIn Feed: Only 1st Connections &amp; Follows</div>
+      <div class="what">Keeps posts from your 1st-degree connections and accounts you follow; hides promoted ads, Suggested posts, strangers, and things that only appeared because someone liked or reposted them.</div>
+      <div class="go">Open →</div>
+    </a>
+    <a class="item" href="facebook-group-player-wanted-alerts/">
+      <div class="meta">Facebook groups · notifications</div>
+      <div class="name">Facebook Group: Player Wanted Alerts</div>
+      <div class="what">Watches one group's feed for new "our team needs fill-in players" posts and fires a sticky desktop notification with the kick-off time and how many they're short. Optional push to your phone via ntfy.</div>
+      <div class="go">Open →</div>
+    </a>
+    <a class="item" href="reddit-remove-promoted-keep-rising/">
+      <div class="meta">Reddit · storage only</div>
+      <div class="name">Reddit: Hide Promoted &amp; Keep Rising</div>
+      <div class="what">Removes Promoted and Sponsored posts from the home feed and keeps it sorted by Rising instead of Best.</div>
+      <div class="go">Open →</div>
+    </a>
+    <a class="item" href="trademe-remove-promoted-listings/">
+      <div class="meta">Trade Me · storage only</div>
+      <div class="name">Trade Me: Hide Promoted &amp; Sponsored</div>
+      <div class="what">Removes Sponsored and Promoted listings and display ads from search results and browsing, in List and Gallery views, leaving only the organic listings.</div>
       <div class="go">Open →</div>
     </a>
   </div>

@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reddit: Hide Promoted &amp; Keep Rising</title>
+<meta name="description" content="Removes Promoted and Sponsored ads from the Reddit home feed and keeps the feed sorted by Rising instead of Best.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Lexend+Deca:wght@300;400;500&display=swap">
+<style>
+  :root{--bg:#F7F8F9;--card:#FFFFFF;--ink:#1F2A30;--ink-2:#5B676D;--ink-3:#8A959A;--line:#E3E7E9;--blue:#0A93D1;--blue-soft:#E4F3FB;--warn:#FFF4E0;--warn-ink:#8A5A00;
+    --title:"Poppins","Helvetica Neue",Arial,sans-serif;--body:"Lexend Deca","Helvetica Neue",Arial,sans-serif;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color-scheme:light}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:300 16px/1.7 var(--body);-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
+  .wrap{width:min(92vw,880px);margin:0 auto}
+  header{padding:28px 0 0;display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
+  .brand{font:600 14px/1 var(--title);letter-spacing:.04em;text-decoration:none;color:var(--ink-2)}
+  .brand span{color:var(--blue)}
+  .crumb{font-size:13.5px;color:var(--ink-3)}
+  .crumb a{color:var(--ink-2);text-decoration:none;border-bottom:1px solid var(--line)}
+  .crumb a:hover{color:var(--blue);border-color:var(--blue)}
+  .hero{padding:clamp(40px,8vh,80px) 0 clamp(24px,5vh,44px)}
+  .tag{font:500 11.5px/1.4 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--blue);background:var(--blue-soft);padding:3px 8px;border-radius:4px;display:inline-block;margin-bottom:14px}
+  .hero h1{font:600 clamp(26px,4.2vw,40px)/1.15 var(--title);margin:0 0 14px;text-wrap:balance;letter-spacing:-.01em;max-width:22ch}
+  .hero p{margin:0;font-size:17.5px;max-width:58ch;color:var(--ink-2)}
+  .hero p b{color:var(--ink);font-weight:500}
+  .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-top:28px}
+  .fact{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .fact b{display:block;font:600 11.5px/1.4 var(--title);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:4px}
+  .fact span{font-size:14.5px;font-weight:400}
+  main{flex:1;padding-bottom:clamp(40px,8vh,80px)}
+  section{margin-top:40px}
+  h2{font:600 13px/1.3 var(--title);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin:0 0 14px}
+  h3{font:600 17px/1.3 var(--title);margin:22px 0 8px}
+  p{margin:0 0 12px;max-width:66ch}
+  ul,ol{margin:0 0 12px;padding-left:22px;max-width:66ch}
+  li{margin:4px 0}
+  li::marker{color:var(--blue)}
+  b,strong{font-weight:500;color:var(--ink)}
+  code{font:400 13.5px var(--mono);background:var(--card);border:1px solid var(--line);border-radius:4px;padding:1px 5px;color:var(--ink)}
+  pre{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 16px;overflow-x:auto;font:400 13px/1.55 var(--mono);margin:0 0 12px}
+  pre code{border:0;padding:0;background:none}
+  table{border-collapse:collapse;width:100%;font-size:14.5px;margin:0 0 12px;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .tablewrap{overflow-x:auto}
+  th,td{text-align:left;padding:10px 14px;border-top:1px solid var(--line);vertical-align:top}
+  th{font:600 11.5px/1.4 var(--title);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);border-top:0;background:var(--bg)}
+  td:first-child{white-space:nowrap;font-weight:400}
+  .callout{background:var(--blue-soft);border-radius:10px;padding:14px 18px;margin:0 0 12px;max-width:66ch;font-weight:400}
+  .callout.warn{background:var(--warn);color:var(--warn-ink)}
+  .callout.warn b{color:inherit}
+  a{color:var(--blue)}
+  .cta{display:inline-block;margin-top:8px;font:500 14px/1 var(--body);color:var(--blue);text-decoration:none;border:1px solid var(--blue);border-radius:8px;padding:11px 16px}
+  .cta:hover{background:var(--blue);color:#fff}
+  footer{border-top:1px solid var(--line);padding:26px 0 36px;font-size:13.5px;line-height:1.8;color:var(--ink-3)}
+  footer a{color:var(--ink-2);text-decoration:none;border-bottom:1px solid var(--line)}
+  footer a:hover{color:var(--blue);border-color:var(--blue)}
+</style>
+</head>
+<body>
+<header class="wrap">
+  <a class="brand" href="../">unashamed<span>/</span>ai</a>
+  <div class="crumb"><a href="../">All projects</a> · Chrome extension</div>
+</header>
+
+<section class="hero wrap">
+  <div class="tag">Chrome extension · Reddit</div>
+  <h1>Reddit: Hide Promoted &amp; Keep Rising</h1>
+  <p>Removes <b>Promoted / Sponsored</b> ads from the Reddit home feed and <b>keeps the feed sorted by Rising</b> instead of the default “Best”.</p>
+  <div class="facts"><div class="fact"><b>Version</b><span>1.0.0</span></div><div class="fact"><b>Permissions</b><span>storage only</span></div><div class="fact"><b>Runs on</b><span>www.reddit.com, HTTPS, top frame</span></div><div class="fact"><b>Network</b><span>None</span></div></div>
+</section>
+<main class="wrap">
+<section>
+<h2>How it works</h2>
+<p>Reddit's current UI ("shreddit") is built from clean, semantic web components, so nothing needs de-obfuscating:</p>
+<ul>
+<li><b>Hide ads.</b> Every feed ad is a <code>&lt;shreddit-ad-post&gt;</code> element carrying a <code>promoted</code> attribute, separated from real posts by <code>&lt;hr&gt;</code> rules. The extension hides each ad plus its trailing rule so no double divider is left behind.</li>
+<li><b>Keep Rising.</b> The Rising sort lives at the stable URL <code>/rising/</code>. Landing on the default home feed (<code>/</code>, <code>?feed=home</code> or <code>/best/</code>) redirects there. No loop risk: <code>/rising/</code> is never itself redirected, and sorts you pick explicitly (<code>/hot/</code>, <code>/new/</code>, <code>/top/</code>) are left alone.</li>
+</ul>
+<p>A <code>MutationObserver</code> re-applies the filter as you scroll and as the feed lazy-loads more posts.</p>
+</section>
+<section>
+<h2>Options (toolbar popup)</h2>
+<ul>
+<li><b>Enable</b>: master on/off.</li>
+<li><b>Hide Promoted / Sponsored</b> and <b>Keep feed sorted by Rising</b>: each independently.</li>
+<li><b>Dim instead of remove</b>: fade and collapse hidden posts, hover to peek.</li>
+<li>A live count of promoted posts hidden on the page.</li>
+</ul>
+</section>
+<section>
+<h2>What it can touch</h2>
+<div class="tablewrap"><table><tr><th>Manifest entry</th><th>Why it is there</th></tr><tr><td><code>permissions: [&quot;storage&quot;]</code></td><td>Your popup settings, kept in <code>chrome.storage.sync</code>. That is the only permission requested.</td></tr><tr><td><code>host_permissions</code></td><td><b>None.</b> Not requested, not needed.</td></tr><tr><td><code>content_scripts.matches: [&quot;https://www.reddit.com/*&quot;]</code></td><td>HTTPS only, and only reddit.com. No other site is touched.</td></tr><tr><td><code>content_scripts.all_frames: false</code></td><td>Top-level document only; nothing is injected into embedded iframes.</td></tr><tr><td><code>run_at: &quot;document_start&quot;</code></td><td>So the page is filtered as it renders rather than flashing unfiltered first.</td></tr><tr><td><code>content_security_policy</code></td><td><code>script-src 'self'</code>: no remote code, no <code>eval</code>, no inline script.</td></tr></table></div><div class="callout"><b>Zero network requests, zero data sent anywhere.</b> No analytics, no telemetry, no remote config, no remote script. The only network traffic is the site itself loading, exactly as it would without the extension. Your settings live in <code>chrome.storage.sync</code> (so they follow your Chrome profile) and nothing else is stored.</div>
+</section>
+<section>
+<h2>What it does not do</h2>
+<ul>
+<li>Does not vote, post, comment or subscribe on your behalf.</li>
+<li>Does not read cookies, tokens or credentials.</li>
+<li>Does not load anything from the network, ever.</li>
+</ul>
+</section>
+<section>
+<h2>Honest caveats</h2>
+<ul>
+<li>Only the current <code>www.reddit.com</code> design is supported, not <code>old.reddit.com</code>.</li>
+<li>If Reddit renames the ad element, the <code>shreddit-ad-post</code> selector in <code>content.js</code> is the one line to change.</li>
+</ul>
+</section>
+<section>
+<h2>Security</h2>
+<p>Follows the repo's shared <a href="https://github.com/drewbroadley/unashamedai/blob/main/chrome-extensions/SECURITY.md">security guidelines</a> (the OWASP Browser Extension Vulnerabilities Cheat Sheet): <code>storage</code> is the only permission, the content script runs HTTPS-only in the top frame, a strict CSP forbids remote code, no <code>innerHTML</code> or <code>eval</code>, no network calls, and popup&#8596;page messaging checks <code>sender.id</code>. A static audit (<code>tests/owasp-audit.mjs</code>) enforces all of that on every extension in the repo.</p>
+</section>
+<section>
+<h2>Install</h2>
+<ol>
+  <li>Download or clone the <a href="https://github.com/drewbroadley/unashamedai">repo</a>.</li>
+  <li>Open <code>chrome://extensions</code> and turn on <b>Developer mode</b> (top right).</li>
+  <li>Click <b>Load unpacked</b> and choose the <code>chrome-extensions/reddit-remove-promoted-keep-rising</code> folder.</li>
+</ol>
+<a class="cta" href="https://github.com/drewbroadley/unashamedai/tree/main/chrome-extensions/reddit-remove-promoted-keep-rising">View the source and README →</a>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    Source, README and every line of code: <a href="https://github.com/drewbroadley/unashamedai/tree/main/chrome-extensions/reddit-remove-promoted-keep-rising">github.com/drewbroadley/unashamedai/chrome-extensions/reddit-remove-promoted-keep-rising</a><br>
+    Part of <a href="../">unashamedly AI-generated</a>, a <a href="https://wearebroadleyspeaking.com/">BROADLEY/SPEAKING</a> side project. Built by AI, described by a human.
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Facebook Group: Player Wanted Alerts</title>
+<meta name="description" content="Watches one Facebook group&#x27;s feed for new &#x27;team needs players&#x27; posts and fires a loud, sticky desktop notification with the kick-off time and how many players are wanted. Optional push to your phone.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Lexend+Deca:wght@300;400;500&display=swap">
+<style>
+  :root{--bg:#F7F8F9;--card:#FFFFFF;--ink:#1F2A30;--ink-2:#5B676D;--ink-3:#8A959A;--line:#E3E7E9;--blue:#0A93D1;--blue-soft:#E4F3FB;--warn:#FFF4E0;--warn-ink:#8A5A00;
+    --title:"Poppins","Helvetica Neue",Arial,sans-serif;--body:"Lexend Deca","Helvetica Neue",Arial,sans-serif;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color-scheme:light}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:300 16px/1.7 var(--body);-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
+  .wrap{width:min(92vw,880px);margin:0 auto}
+  header{padding:28px 0 0;display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
+  .brand{font:600 14px/1 var(--title);letter-spacing:.04em;text-decoration:none;color:var(--ink-2)}
+  .brand span{color:var(--blue)}
+  .crumb{font-size:13.5px;color:var(--ink-3)}
+  .crumb a{color:var(--ink-2);text-decoration:none;border-bottom:1px solid var(--line)}
+  .crumb a:hover{color:var(--blue);border-color:var(--blue)}
+  .hero{padding:clamp(40px,8vh,80px) 0 clamp(24px,5vh,44px)}
+  .tag{font:500 11.5px/1.4 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--blue);background:var(--blue-soft);padding:3px 8px;border-radius:4px;display:inline-block;margin-bottom:14px}
+  .hero h1{font:600 clamp(26px,4.2vw,40px)/1.15 var(--title);margin:0 0 14px;text-wrap:balance;letter-spacing:-.01em;max-width:22ch}
+  .hero p{margin:0;font-size:17.5px;max-width:58ch;color:var(--ink-2)}
+  .hero p b{color:var(--ink);font-weight:500}
+  .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-top:28px}
+  .fact{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .fact b{display:block;font:600 11.5px/1.4 var(--title);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:4px}
+  .fact span{font-size:14.5px;font-weight:400}
+  main{flex:1;padding-bottom:clamp(40px,8vh,80px)}
+  section{margin-top:40px}
+  h2{font:600 13px/1.3 var(--title);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin:0 0 14px}
+  h3{font:600 17px/1.3 var(--title);margin:22px 0 8px}
+  p{margin:0 0 12px;max-width:66ch}
+  ul,ol{margin:0 0 12px;padding-left:22px;max-width:66ch}
+  li{margin:4px 0}
+  li::marker{color:var(--blue)}
+  b,strong{font-weight:500;color:var(--ink)}
+  code{font:400 13.5px var(--mono);background:var(--card);border:1px solid var(--line);border-radius:4px;padding:1px 5px;color:var(--ink)}
+  pre{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 16px;overflow-x:auto;font:400 13px/1.55 var(--mono);margin:0 0 12px}
+  pre code{border:0;padding:0;background:none}
+  table{border-collapse:collapse;width:100%;font-size:14.5px;margin:0 0 12px;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .tablewrap{overflow-x:auto}
+  th,td{text-align:left;padding:10px 14px;border-top:1px solid var(--line);vertical-align:top}
+  th{font:600 11.5px/1.4 var(--title);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);border-top:0;background:var(--bg)}
+  td:first-child{white-space:nowrap;font-weight:400}
+  .callout{background:var(--blue-soft);border-radius:10px;padding:14px 18px;margin:0 0 12px;max-width:66ch;font-weight:400}
+  .callout.warn{background:var(--warn);color:var(--warn-ink)}
+  .callout.warn b{color:inherit}
+  a{color:var(--blue)}
+  .cta{display:inline-block;margin-top:8px;font:500 14px/1 var(--body);color:var(--blue);text-decoration:none;border:1px solid var(--blue);border-radius:8px;padding:11px 16px}
+  .cta:hover{background:var(--blue);color:#fff}
+  footer{border-top:1px solid var(--line);padding:26px 0 36px;font-size:13.5px;line-height:1.8;color:var(--ink-3)}
+  footer a{color:var(--ink-2);text-decoration:none;border-bottom:1px solid var(--line)}
+  footer a:hover{color:var(--blue);border-color:var(--blue)}
+</style>
+</head>
+<body>
+<header class="wrap">
+  <a class="brand" href="../">unashamed<span>/</span>ai</a>
+  <div class="crumb"><a href="../">All projects</a> · Chrome extension</div>
+</header>
+
+<section class="hero wrap">
+  <div class="tag">Chrome extension · Facebook groups</div>
+  <h1>Facebook Group: Player Wanted Alerts</h1>
+  <p>Watches one Facebook group's chronological feed and, the moment a <b>new</b> post appears from a team looking for fill-in players, fires a loud desktop notification that tells you <b>what time the game is</b> and <b>how many players they need</b>. Optionally, the same alert as a <b>push to your phone</b>. Built for a Wellington indoor football group; the group id is configurable.</p>
+  <div class="facts"><div class="fact"><b>Version</b><span>1.2.0</span></div><div class="fact"><b>Permissions</b><span>storage, notifications, alarms, offscreen</span></div><div class="fact"><b>Runs on</b><span>facebook.com/groups/*, HTTPS, top frame</span></div><div class="fact"><b>Network</b><span>None, unless you turn on phone push</span></div></div>
+</section>
+<main class="wrap">
+<section>
+<h2>What it does</h2>
+<div class="callout">⚽ <b>1:30pm today — 2 players needed</b><br>1 female + 1 male · Div 3 · free<br><span style="color:var(--ink-2)">Posted by Daniel Harrold · <em>NEC FC need 2x players for today's game at 1.30PM - FREE</em></span></div>
+<ol>
+<li><b>Reads the group feed</b> you already have open (or opens it briefly in a background tab) and pulls out each post's id, author, text and age.</li>
+<li><b>Classifies the post.</b> Only "a team needs fill-in players" posts alert. It stays quiet for players looking to <em>join</em> a team, posts already sorted or cancelled, and anything with no kick-off time in it.</li>
+<li><b>Extracts the useful bits</b>: kick-off time, day, number of players, whether they want a specific gender or a goalkeeper, division and cost.</li>
+<li><b>Alerts once, obviously.</b> A sticky Chrome notification that stays until you deal with it, a three-beep chime, and a red badge on the toolbar icon. Clicking it opens the post.</li>
+<li><b>Optionally pushes it to your phone</b> via <a href="https://ntfy.sh">ntfy</a>. Off by default, and the only thing this extension ever sends anywhere.</li>
+</ol>
+<h3>Only new posts, never a backlog</h3>
+<ul>
+<li><b>A seen-set.</b> Every post id it has looked at is remembered locally (most recent 500). A post alerts at most once, ever.</li>
+<li><b>A baseline on first run.</b> The first scan after install marks everything already in the feed as seen and alerts for none of it.</li>
+<li><b>An age gate.</b> Posts older than your chosen window (default 1.5 hours) are ignored, so scrolling back can't trigger anything. Because this group holds posts for admin approval, age is the smaller of the post's written time and its visible "15m" stamp, so an approval-delayed post still counts as new.</li>
+</ul>
+<h3>Keeping the feed fresh</h3>
+<p>If the group is open in a tab, that tab is reloaded on a timer (default every 3 minutes) unless it currently has focus, in which case it is just re-scanned. If no group tab is open, <b>background check</b> (on by default) opens the group in an inactive tab, reads it, and closes it about a minute later.</p>
+</section>
+<section>
+<h2>Phone push (optional)</h2>
+<p>Chrome only alerts the machine it runs on. <b>Also alert my phone</b> sends the same alert through <a href="https://ntfy.sh">ntfy</a>, a free pub/sub notification service with no account and no signup: your desktop publishes to a <em>topic</em>, the ntfy app on your phone is subscribed to it and rings. Setup is about two minutes: install the ntfy app, click <b>Generate a topic</b> in the popup, subscribe to that topic in the app, switch the option on, and <b>Test phone push</b>.</p>
+<div class="callout warn"><b>The topic name is both the address and the password.</b> ntfy.sh has no accounts; anyone who knows or guesses your topic can read every alert you receive (including, by default, the post text with team and poster names) and send you fake alerts. That is why the popup generates a 20-character random topic instead of letting you type "football". You can also turn <b>Include the post text</b> off, self-host ntfy (HTTPS only), or use an access token on a protected topic. All three are supported.</div>
+<ul>
+<li>Push is best-effort; the desktop notification is not. The push is sent <em>after</em> the desktop notification, so a dead network never costs you the alert on the machine you are at.</li>
+<li>One retry, then it gives up, and the failure is shown in the popup's status line.</li>
+<li>It still needs Chrome running on the desktop. The phone is a second screen, not an independent watcher.</li>
+<li>ntfy.sh is a free public service run by a third party; it can be slow, rate-limited or down. Self-host if that matters.</li>
+<li>The topic and token live in <code>chrome.storage.sync</code>, so they follow your Chrome profile.</li>
+</ul>
+</section>
+<section>
+<h2>What it can touch</h2>
+<div class="tablewrap"><table><tr><th>Manifest entry</th><th>Why it is there</th></tr><tr><td><code>permissions: [&quot;storage&quot;]</code></td><td>Your settings (<code>chrome.storage.sync</code>) and the seen-post set plus recent alert list (<code>chrome.storage.local</code>).</td></tr><tr><td><code>permissions: [&quot;notifications&quot;]</code></td><td>The entire feature is a desktop notification.</td></tr><tr><td><code>permissions: [&quot;alarms&quot;]</code></td><td>An MV3 service worker is killed within seconds of going idle; <code>chrome.alarms</code> is the only supported way to poll on a schedule.</td></tr><tr><td><code>permissions: [&quot;offscreen&quot;]</code></td><td>Service workers have no DOM and cannot play audio. A tiny offscreen document exists purely to sound the chime.</td></tr><tr><td><code>host_permissions</code></td><td><b>None.</b> Not requested, not needed.</td></tr><tr><td><code>optional_host_permissions: [&quot;https://ntfy.sh/*&quot;]</code></td><td>Phone push only. <b>Optional</b>: not granted at install, requested the moment you switch phone push on, revocable any time from <code>chrome://extensions</code>. One origin, no wildcards. Leave phone push off and it is never granted.</td></tr><tr><td><code>content_scripts.matches: [&quot;https://www.facebook.com/groups/*&quot;]</code></td><td>HTTPS only, and only group pages. Your home feed, Messenger, Marketplace, profiles and every other site are never touched.</td></tr><tr><td><code>content_scripts.all_frames: false</code></td><td>Top-level document only.</td></tr><tr><td><code>content_security_policy</code></td><td><code>script-src 'self'; object-src 'self'; base-uri 'none'</code>: no remote code, no <code>eval</code>, no inline script.</td></tr></table></div>
+<p>The <code>tabs</code> permission is deliberately <b>not</b> requested even though the extension reloads, creates and closes tabs: those specific calls don't need it, and it would grant read access to the URL and title of every tab you have open.</p>
+<h3>What data it reads, stores or sends</h3>
+<ul>
+<li><b>Reads</b> the text, author name, post id and timestamp of posts in the configured group, only while a group page is open in a tab.</li>
+<li><b>Stores</b>, all locally in your browser: your settings, up to 500 already-seen post ids, the last 20 alert headlines, the id of your group tab and the last check time.</li>
+<li><b>Sends nothing at all unless you turn on phone push.</b> With phone push off, the default, the extension makes zero network requests of its own. With it on, one HTTPS POST per new alert goes to ntfy.sh (or your own server) carrying the topic, the headline, the summary line, the post text if you allow it, the author's name and a link to the post. Nothing that identifies you, your browser or your machine is included; ntfy sees your IP address, as any server you POST to does.</li>
+</ul>
+</section>
+<section>
+<h2>What it does not do</h2>
+<ul>
+<li>Does not post, comment, react, DM or click anything on your behalf. It does not even click "See more".</li>
+<li>Does not read your home feed, messages, friends list, or any page outside <code>/groups/</code>.</li>
+<li>Does not read cookies, tokens or credentials, and does not modify the Facebook page.</li>
+<li>Does not read anything back from ntfy; publishing is one-way and nothing the server returns is parsed or acted on.</li>
+<li>No <code>innerHTML</code>, <code>eval</code>, <code>localStorage</code> or remotely loaded code. The chime is synthesised with the Web Audio API; there are no bundled downloads.</li>
+</ul>
+</section>
+<section>
+<h2>Honest limitations</h2>
+<ul>
+<li><b>Facebook's DOM is a moving target.</b> The extension anchors on <code>[role="feed"]</code>, three specific post-body attributes and the permalink's <code>aria-label</code>, all verified live against the real group. Facebook can rename any of them without notice; if alerts stop, that is the first thing to check.</li>
+<li><b>Facebook fights scraping</b> with decoy spans and scrambled timestamps, which is why the body is read from a specific attribute and a post without one is skipped rather than guessed at.</li>
+<li><b>Long posts truncated by "See more"</b> are skipped if the kick-off time is behind the fold, rather than mis-reported.</li>
+<li><b>The parser is heuristic</b>, tuned against 60+ real posts (175 checks in <code>tests/parser.test.mjs</code>). It will occasionally miscount an unusual phrasing; the notification always includes the original text so you can check.</li>
+<li><b>Bare times are guessed by league hours</b>: "1.30" becomes 1:30pm because these leagues run roughly 9am to 9:30pm. A genuine 1:30am game would be reported wrong.</li>
+<li><b>Photo-only posts</b> are never detected.</li>
+<li><b>Background check opens a real tab.</b> It is inactive and closes itself, but it will briefly appear in your tab strip and count as a page view on Facebook. Turn it off if you'd rather only scan a tab you opened yourself.</li>
+<li><b>The service worker can be asleep.</b> Chrome may delay alarms on battery saver or when idle, so "every 3 minutes" is a target, not a guarantee.</li>
+<li><b>It only works while Chrome is running</b>, on the desktop <em>or</em> the phone.</li>
+</ul>
+</section>
+<section>
+<h2>Tests</h2>
+<p>From <code>chrome-extensions/</code>:</p>
+<pre><code>node tests/parser.test.mjs    # 175 checks over 60+ real posts from the group
+node tests/push.test.mjs      # 54 checks on the ntfy payload builder + retries
+node tests/owasp-audit.mjs    # static security audit of every extension here</code></pre>
+</section>
+<section>
+<h2>Install</h2>
+<ol>
+  <li>Download or clone the <a href="https://github.com/drewbroadley/unashamedai">repo</a>.</li>
+  <li>Open <code>chrome://extensions</code> and turn on <b>Developer mode</b> (top right).</li>
+  <li>Click <b>Load unpacked</b> and choose the <code>chrome-extensions/facebook-group-player-wanted-alerts</code> folder.</li>
+</ol>
+<a class="cta" href="https://github.com/drewbroadley/unashamedai/tree/main/chrome-extensions/facebook-group-player-wanted-alerts">View the source and README →</a>
+
+<p style="margin-top:14px">Then allow notifications for Chrome if macOS or Windows prompts. On macOS also set <b>System Settings → Notifications → Google Chrome</b> to <b>Alerts</b> (not Banners) so the alert stays on screen, and click <b>Test alert</b> in the popup to confirm the notification and chime both land.</p>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    Source, README and every line of code: <a href="https://github.com/drewbroadley/unashamedai/tree/main/chrome-extensions/facebook-group-player-wanted-alerts">github.com/drewbroadley/unashamedai/chrome-extensions/facebook-group-player-wanted-alerts</a><br>
+    Part of <a href="../">unashamedly AI-generated</a>, a <a href="https://wearebroadleyspeaking.com/">BROADLEY/SPEAKING</a> side project. Built by AI, described by a human.
+  </div>
+</footer>
+</body>
+</html>
